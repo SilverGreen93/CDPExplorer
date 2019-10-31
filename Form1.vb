@@ -160,11 +160,18 @@ Public Class Form1
             Case 1 'integer
                 'expandedChump = expandedChump &
                 'Space(IIf(40 - tagNameSize - 1 - level * 2 < 2, 2, 40 - tagNameSize - 1 - level * 2))
-                 Dim comma As Boolean = False
-                For i As Integer = 0 To tagLength - tagNameSize - 3 Step 4
+                'Dim comma As Boolean = False
+                'exceptie: daca kuid e -1 atunci e tinut ca int numai partea a doua si aici trebuie recompus!
+                If System.Text.Encoding.UTF8.GetString(tagName) = "kuid" Then
+                    'For i As Integer = 0 To tagLength - tagNameSize - 3 Step 4
                     'expandedChump = expandedChump & IIf(comma, ",", "") & ParseInteger32(bytes, fpointer + i).ToString("G", Globalization.CultureInfo.InvariantCulture)
-                    comma = True
-                Next
+                    Dim kuid As Byte() = {&HFF, &HFF, &HFF, &HFF, 0, 0, 0, 0}
+                    'copiaza ultimii 4 octeti, primii 4 sint -1
+                    Array.Copy(bytes, fpointer, kuid, 4, 4)
+                    Ckuid = HexToKuid(kuid)
+                    'comma = True
+                    'Next
+                End If
             Case 2 'float
                 'expandedChump = expandedChump &
                 'Space(IIf(40 - tagNameSize - 1 - level * 2 < 2, 2, 40 - tagNameSize - 1 - level * 2))
