@@ -47,7 +47,7 @@ Partial Class Form1
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(120, 17)
         Me.Label2.TabIndex = 17
-        Me.Label2.Text = "by vvmm (c) 2018"
+        Me.Label2.Text = "by vvmm (c) 2019"
         '
         'LinkLabel1
         '
@@ -195,7 +195,7 @@ Partial Class Form1
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.MaximizeBox = False
         Me.Name = "Form1"
-        Me.Text = "CDP Explorer v2.1"
+        Me.Text = "CDP Explorer v2.2"
         CType(Me.gridKUIDs, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
