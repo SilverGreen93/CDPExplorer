@@ -1,4 +1,6 @@
-﻿Public Class Form1
+﻿Imports System.IO
+
+Public Class Form1
 
     Dim file As String
     Dim kuidList As String
@@ -6,6 +8,7 @@
     Dim totalAssets, lastIndex As Integer
     Dim expandedChump As String
     Dim bytesCopied(15) As Byte
+    Dim bytes As Byte() 'the file contents is stored here
 
     ''' <summary>
     ''' Transforms string kuid to 8 byte kuid (for routes/sessions)
@@ -52,6 +55,7 @@
             Next
         Catch ex As Exception
             MessageBox.Show(ex.ToString, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            lblProgress.Visible = False
         End Try
 
         Return rbytes
@@ -76,6 +80,7 @@
             Next
         Catch ex As Exception
             MessageBox.Show(ex.ToString, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            lblProgress.Visible = False
         End Try
 
         Return rbytes
@@ -155,7 +160,7 @@
             Case 1 'integer
                 'expandedChump = expandedChump &
                 'Space(IIf(40 - tagNameSize - 1 - level * 2 < 2, 2, 40 - tagNameSize - 1 - level * 2))
-                Dim comma As Boolean = False
+                 Dim comma As Boolean = False
                 For i As Integer = 0 To tagLength - tagNameSize - 3 Step 4
                     'expandedChump = expandedChump & IIf(comma, ",", "") & ParseInteger32(bytes, fpointer + i).ToString("G", Globalization.CultureInfo.InvariantCulture)
                     comma = True
@@ -299,7 +304,10 @@
         Dim files As String() = My.Application.CommandLineArgs.ToArray
         If files.Length > 0 Then
             file = files(0)
+            lblProgress.Visible = True
+            Application.DoEvents()
             ProcessCDP()
+            lblProgress.Visible = False
         End If
 
     End Sub
@@ -314,7 +322,10 @@
             Dim files As String() = args.ToArray
             If files.Length > 0 Then
                 file = files(0)
+                lblProgress.Visible = True
+                Application.DoEvents()
                 ProcessCDP()
+                lblProgress.Visible = False
             End If
         End If
     End Sub
@@ -323,7 +334,11 @@
         Dim files As String() = e.Data.GetData(DataFormats.FileDrop)
         If files.Length > 0 Then
             file = files(0)
+            bytes = Nothing 'clears the previously read file
+            lblProgress.Visible = True
+            Application.DoEvents()
             ProcessCDP()
+            lblProgress.Visible = False
         End If
 
     End Sub
@@ -340,9 +355,12 @@
 
         If OpenFileDialog1.ShowDialog <> vbOK Then Exit Sub
 
+        lblProgress.Visible = True
+        Application.DoEvents()
         For row As Integer = 0 To gridKUIDs.SelectedRows.Count - 1
             ExtractContent(gridKUIDs.SelectedRows(row).Cells(0).Value, System.IO.Path.GetDirectoryName(OpenFileDialog1.FileName))
         Next
+        lblProgress.Visible = False
 
         MessageBox.Show("Extracting assets to CDPs finished!", "Ready", MessageBoxButtons.OK, MessageBoxIcon.Information)
     End Sub
@@ -353,9 +371,12 @@
 
         If OpenFileDialog1.ShowDialog <> vbOK Then Exit Sub
 
+        lblProgress.Visible = True
+        Application.DoEvents()
         For row As Integer = 0 To gridKUIDs.Rows.Count - 1
             ExtractContent(gridKUIDs.Rows(row).Cells(0).Value, System.IO.Path.GetDirectoryName(OpenFileDialog1.FileName))
         Next
+        lblProgress.Visible = False
 
         MessageBox.Show("Extracting assets to CDPs finished!", "Ready", MessageBoxButtons.OK, MessageBoxIcon.Information)
     End Sub
@@ -417,92 +438,117 @@
     End Sub
 
     Sub ProcessCDP()
-        If My.Computer.FileSystem.FileExists(file) Then 'expand chump
+        If Not My.Computer.FileSystem.FileExists(file) Then Exit Sub
 
-            Try
+        'expand chump
 
-                Dim bytes As Byte() = My.Computer.FileSystem.ReadAllBytes(file)
-
-                Dim b1(3) As Byte
-                Array.Copy(bytes, b1, 4)
-                Dim b2 As Byte() = System.Text.Encoding.ASCII.GetBytes("ACS$")
-
-                If Not CompareBytes(b1, b2) Then
-                    MessageBox.Show("File format not supported for " & file)
-                    Exit Sub
+        Try
+            If bytes Is Nothing Then
+                Dim fileStr As New FileStream(file, FileMode.Open, FileAccess.Read)
+                If fileStr.Length > System.Int32.MaxValue Then
+                    fileStr.Close()
+                    Throw New Exception("Files greater than 2GB are not supported.")
                 End If
 
-                Dim fpointer As Integer = 12
-                Dim chumpLength As Integer = ParseInteger32(bytes, fpointer)
-                fpointer = fpointer + 4
+                bytes = New Byte(fileStr.Length - 1) {}
+                'MessageBox.Show(fileStr.Length) 'for debugging >2GB files
+                fileStr.Seek(0, SeekOrigin.Begin)
 
-                expandedChump = ""
-                totalAssets = 0
-                Ckuid = ""
-                Cusername = ""
-                Ckind = ""
-                Cbuild = ""
-                Cregion = ""
-                Cera = ""
-                Cclass = ""
-                kuidList = ""
-                gridKUIDs.RowCount = 1
+                Dim bytesRead As Long = fileStr.Read(bytes, 0, bytes.Length)
+                If bytesRead = 0 Then
+                    fileStr.Close()
+                    Throw New Exception("Error reading file: " & file)
+                End If
+                fileStr.Close()
+            End If
 
-                Dim currentFilePointer As Integer = fpointer
-                Dim level As Integer = 0
-                While Not fpointer = currentFilePointer + chumpLength
+            Dim b1(3) As Byte
+            Array.Copy(bytes, b1, 4)
+            Dim b2 As Byte() = System.Text.Encoding.ASCII.GetBytes("ACS$")
 
-                    ParseSubTags(bytes, fpointer, expandedChump, level, "")
+            If Not CompareBytes(b1, b2) Then
+                Throw New Exception("File format not supported for " & file)
+            End If
 
-                End While
+            Dim fpointer As Integer = 12
+            Dim chumpLength As Integer = ParseInteger32(bytes, fpointer)
+            fpointer = fpointer + 4
 
-                lblCount.Text = totalAssets & " assets."
-                gridKUIDs.Rows.RemoveAt(0)
+            expandedChump = ""
+            totalAssets = 0
+            Ckuid = ""
+            Cusername = ""
+            Ckind = ""
+            Cbuild = ""
+            Cregion = ""
+            Cera = ""
+            Cclass = ""
+            kuidList = ""
+            gridKUIDs.RowCount = 1
 
-            Catch ex As Exception
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            End Try
+            Dim currentFilePointer As Integer = fpointer
+            Dim level As Integer = 0
+            While Not fpointer = currentFilePointer + chumpLength
 
-        End If
+                ParseSubTags(bytes, fpointer, expandedChump, level, "")
+
+            End While
+
+            lblCount.Text = totalAssets & " assets."
+            gridKUIDs.Rows.RemoveAt(0)
+
+        Catch ex As Exception
+            MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            lblProgress.Visible = False
+        End Try
+
         ' MessageBox.Show("Finished expanding chumps.", "Ready", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
     End Sub
 
     Sub CopyCDP(ByVal wkuid As String)
-        If My.Computer.FileSystem.FileExists(file) Then 'expand chump
+        Dim status As Boolean
 
-            Try
+        If Not My.Computer.FileSystem.FileExists(file) Then Exit Sub
 
-                Dim bytes As Byte() = My.Computer.FileSystem.ReadAllBytes(file)
+        'expand chump
 
-                Dim b1(3) As Byte
-                Array.Copy(bytes, b1, 4)
-                Dim b2 As Byte() = System.Text.Encoding.ASCII.GetBytes("ACS$")
+        Try
 
-                If Not CompareBytes(b1, b2) Then
-                    MessageBox.Show("File format not supported for " & file)
-                    Exit Sub
-                End If
+            If bytes Is Nothing Then
+                bytes = My.Computer.FileSystem.ReadAllBytes(file)
+            End If
 
-                Dim fpointer As Integer = 12
-                Dim chumpLength As Integer = ParseInteger32(bytes, fpointer)
-                fpointer = fpointer + 4
+            Dim b1(3) As Byte
+            Array.Copy(bytes, b1, 4)
+            Dim b2 As Byte() = System.Text.Encoding.ASCII.GetBytes("ACS$")
 
-                Array.Copy(bytes, bytesCopied, 16)
+            If Not CompareBytes(b1, b2) Then
+                Throw New Exception("File format not supported for " & file)
+                Exit Sub
+            End If
 
-                Dim currentFilePointer As Integer = fpointer
-                Dim level As Integer = 0
-                'While Not fpointer = currentFilePointer + chumpLength
+            Dim fpointer As Integer = 12
+            Dim chumpLength As Integer = ParseInteger32(bytes, fpointer)
+            fpointer = fpointer + 4
 
-                CopySubTags(bytes, fpointer, expandedChump, level, "", wkuid)
+            Array.Copy(bytes, bytesCopied, 16)
 
-                'End While
+            Dim currentFilePointer As Integer = fpointer
+            Dim level As Integer = 0
 
-            Catch ex As Exception
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            End Try
+            While Not fpointer = currentFilePointer + chumpLength
+                status = CopySubTags(bytes, fpointer, expandedChump, level, "", wkuid)
+                If status = True Then Exit While
+            End While
 
-        End If
+            If status = False Then Throw New Exception("The asset could not be found in the CDP!")
+
+        Catch ex As Exception
+            MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            lblProgress.Visible = False
+        End Try
+
         ' MessageBox.Show("Finished expanding chumps.", "Ready", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
     End Sub
@@ -513,6 +559,8 @@
         fpointer = fpointer + 4
         Dim tagNameSize As Byte = bytes(fpointer)
         fpointer = fpointer + 1
+
+        Dim status As Boolean
 
         Dim tagName(tagNameSize - 2) As Byte
         Array.Copy(bytes, fpointer, tagName, 0, tagNameSize - 1)
@@ -542,75 +590,74 @@
                 'expandedChump = expandedChump & vbCrLf & Space(level * 2) & "{" & vbCrLf
 
                 While Not fpointer = currentFilePointer + tagLength - tagNameSize - 2
-
-                    If (CopySubTags(bytes, fpointer, expandedChump, level + 1, System.Text.Encoding.UTF8.GetString(tagName), wkuid)) Then Exit While
-
+                    status = CopySubTags(bytes, fpointer, expandedChump, level + 1, System.Text.Encoding.UTF8.GetString(tagName), wkuid)
+                    If status = True Then Return True
                 End While
 
-                'expandedChump = expandedChump & Space(level * 2) & "}"
-            Case 1 'integer
-                'expandedChump = expandedChump &
-                'Space(IIf(40 - tagNameSize - 1 - level * 2 < 2, 2, 40 - tagNameSize - 1 - level * 2))
-                Dim comma As Boolean = False
-                For i As Integer = 0 To tagLength - tagNameSize - 3 Step 4
-                    'expandedChump = expandedChump & IIf(comma, ",", "") & ParseInteger32(bytes, fpointer + i).ToString("G", Globalization.CultureInfo.InvariantCulture)
-                    comma = True
-                Next
-            Case 2 'float
-                'expandedChump = expandedChump &
-                'Space(IIf(40 - tagNameSize - 1 - level * 2 < 2, 2, 40 - tagNameSize - 1 - level * 2))
-                Dim comma As Boolean = False
-                For i As Integer = 0 To tagLength - tagNameSize - 3 Step 4
-                    'expandedChump = expandedChump & IIf(comma, ",", "") & ParseFloat(bytes, fpointer + i).ToString("G", Globalization.CultureInfo.InvariantCulture)
-                    If System.Text.Encoding.UTF8.GetString(tagName) = "trainz-build" Then
-                        Cbuild = ParseFloat(bytes, fpointer + i).ToString("G", Globalization.CultureInfo.InvariantCulture)
-                    End If
-                    comma = True
-                Next
-            Case 3 'string
-                If tagLength - tagNameSize - 4 > 0 Then 'otherwise it is a null string (not even a character)
-                    Dim tagString(tagLength - tagNameSize - 4) As Byte
-                    Array.Copy(bytes, fpointer, tagString, 0, tagLength - tagNameSize - 3)
+                '    'expandedChump = expandedChump & Space(level * 2) & "}"
+                'Case 1 'integer
+                '    'expandedChump = expandedChump &
+                '    'Space(IIf(40 - tagNameSize - 1 - level * 2 < 2, 2, 40 - tagNameSize - 1 - level * 2))
+                '    Dim comma As Boolean = False
+                '    For i As Integer = 0 To tagLength - tagNameSize - 3 Step 4
+                '        'expandedChump = expandedChump & IIf(comma, ",", "") & ParseInteger32(bytes, fpointer + i).ToString("G", Globalization.CultureInfo.InvariantCulture)
+                '        comma = True
+                '    Next
+                'Case 2 'float
+                '    'expandedChump = expandedChump &
+                '    'Space(IIf(40 - tagNameSize - 1 - level * 2 < 2, 2, 40 - tagNameSize - 1 - level * 2))
+                '    Dim comma As Boolean = False
+                '    For i As Integer = 0 To tagLength - tagNameSize - 3 Step 4
+                '        'expandedChump = expandedChump & IIf(comma, ",", "") & ParseFloat(bytes, fpointer + i).ToString("G", Globalization.CultureInfo.InvariantCulture)
+                '        If System.Text.Encoding.UTF8.GetString(tagName) = "trainz-build" Then
+                '            Cbuild = ParseFloat(bytes, fpointer + i).ToString("G", Globalization.CultureInfo.InvariantCulture)
+                '        End If
+                '        comma = True
+                '    Next
+                'Case 3 'string
+                '    If tagLength - tagNameSize - 4 > 0 Then 'otherwise it is a null string (not even a character)
+                '        Dim tagString(tagLength - tagNameSize - 4) As Byte
+                '        Array.Copy(bytes, fpointer, tagString, 0, tagLength - tagNameSize - 3)
 
-                    'If System.Text.Encoding.UTF8.GetString(tagName) = "username" Then
-                    '    Cusername = System.Text.Encoding.UTF8.GetString(tagString)
-                    'ElseIf System.Text.Encoding.UTF8.GetString(tagName) = "kind" Then
-                    '    Ckind = System.Text.Encoding.UTF8.GetString(tagString)
-                    'ElseIf System.Text.Encoding.UTF8.GetString(tagName) = "category-region" OrElse System.Text.Encoding.UTF8.GetString(tagName) = "category-region-0" Then
-                    '    Cregion = System.Text.Encoding.UTF8.GetString(tagString)
-                    'ElseIf System.Text.Encoding.UTF8.GetString(tagName) = "category-era" OrElse System.Text.Encoding.UTF8.GetString(tagName) = "category-era-0" Then
-                    '    Cera = System.Text.Encoding.UTF8.GetString(tagString)
-                    'ElseIf System.Text.Encoding.UTF8.GetString(tagName) = "category-class" Then
-                    '    Cclass = System.Text.Encoding.UTF8.GetString(tagString)
-                    'End If
+                '        'If System.Text.Encoding.UTF8.GetString(tagName) = "username" Then
+                '        '    Cusername = System.Text.Encoding.UTF8.GetString(tagString)
+                '        'ElseIf System.Text.Encoding.UTF8.GetString(tagName) = "kind" Then
+                '        '    Ckind = System.Text.Encoding.UTF8.GetString(tagString)
+                '        'ElseIf System.Text.Encoding.UTF8.GetString(tagName) = "category-region" OrElse System.Text.Encoding.UTF8.GetString(tagName) = "category-region-0" Then
+                '        '    Cregion = System.Text.Encoding.UTF8.GetString(tagString)
+                '        'ElseIf System.Text.Encoding.UTF8.GetString(tagName) = "category-era" OrElse System.Text.Encoding.UTF8.GetString(tagName) = "category-era-0" Then
+                '        '    Cera = System.Text.Encoding.UTF8.GetString(tagString)
+                '        'ElseIf System.Text.Encoding.UTF8.GetString(tagName) = "category-class" Then
+                '        '    Cclass = System.Text.Encoding.UTF8.GetString(tagString)
+                '        'End If
 
-                    'expandedChump = expandedChump &
-                    'Space(IIf(40 - tagNameSize - 1 - level * 2 < 2, 2, 40 - tagNameSize - 1 - level * 2)) &
-                    '"""" & System.Text.Encoding.UTF8.GetString(tagString) & """"
-                End If
-            Case 4 'binary
-                If tagLength - tagNameSize - 4 > 0 Then 'otherwise it is a null string (not even a character)
-                    Dim tagString(tagLength - tagNameSize - 4) As Byte
-                    Array.Copy(bytes, fpointer, tagString, 0, tagLength - tagNameSize - 3)
-                    'expandedChump = expandedChump &
-                    'Space(IIf(40 - tagNameSize - 1 - level * 2 < 2, 2, 40 - tagNameSize - 1 - level * 2)) &
-                    'System.Text.Encoding.ASCII.GetString(tagString)
-                End If
-            Case 5 'null
+                '        'expandedChump = expandedChump &
+                '        'Space(IIf(40 - tagNameSize - 1 - level * 2 < 2, 2, 40 - tagNameSize - 1 - level * 2)) &
+                '        '"""" & System.Text.Encoding.UTF8.GetString(tagString) & """"
+                '    End If
+                'Case 4 'binary
+                '    If tagLength - tagNameSize - 4 > 0 Then 'otherwise it is a null string (not even a character)
+                '        Dim tagString(tagLength - tagNameSize - 4) As Byte
+                '        Array.Copy(bytes, fpointer, tagString, 0, tagLength - tagNameSize - 3)
+                '        'expandedChump = expandedChump &
+                '        'Space(IIf(40 - tagNameSize - 1 - level * 2 < 2, 2, 40 - tagNameSize - 1 - level * 2)) &
+                '        'System.Text.Encoding.ASCII.GetString(tagString)
+                '    End If
+                'Case 5 'null
 
-            Case 13 'kuid
-                Dim kuid(7) As Byte
-                Array.Copy(bytes, fpointer, kuid, 0, 8)
+                'Case 13 'kuid
+                '    Dim kuid(7) As Byte
+                '    Array.Copy(bytes, fpointer, kuid, 0, 8)
 
-                If System.Text.Encoding.UTF8.GetString(tagName) = "kuid" Then
-                    Ckuid = HexToKuid(kuid)
-                End If
+                '    If System.Text.Encoding.UTF8.GetString(tagName) = "kuid" Then
+                '        Ckuid = HexToKuid(kuid)
+                '    End If
 
-                'expandedChump = expandedChump &
-                'Space(IIf(40 - tagNameSize - 1 - level * 2 < 2, 2, 40 - tagNameSize - 1 - level * 2)) &
-                'HexToKuid(kuid)
-            Case Else
-                Throw New Exception("Unknown tag type: " & tagType)
+                '    'expandedChump = expandedChump &
+                '    'Space(IIf(40 - tagNameSize - 1 - level * 2 < 2, 2, 40 - tagNameSize - 1 - level * 2)) &
+                '    'HexToKuid(kuid)
+                'Case Else
+                '    Throw New Exception("Unknown tag type: " & tagType)
         End Select
 
         If tagType <> 0 Then fpointer = fpointer + tagLength - tagNameSize - 2

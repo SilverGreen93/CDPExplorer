@@ -12,7 +12,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyDescription("Utility to view and extract Trainz CDP files.")>
 <Assembly: AssemblyCompany("vvmm")>
 <Assembly: AssemblyProduct("CDP Explorer")>
-<Assembly: AssemblyCopyright("Copyright © vvmm 2017")>
+<Assembly: AssemblyCopyright("Copyright © vvmm 2018")>
 <Assembly: AssemblyTrademark("")>
 
 <Assembly: ComVisible(False)>
@@ -31,5 +31,5 @@ Imports System.Runtime.InteropServices
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("2.0.0.0")>
-<Assembly: AssemblyFileVersion("2.0.0.0")>
+<Assembly: AssemblyVersion("2.1.0.0")>
+<Assembly: AssemblyFileVersion("2.1.0.0")>

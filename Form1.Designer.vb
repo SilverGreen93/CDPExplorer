@@ -36,6 +36,7 @@ Partial Class Form1
         Me.Button4 = New System.Windows.Forms.Button()
         Me.Button5 = New System.Windows.Forms.Button()
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
+        Me.lblProgress = New System.Windows.Forms.Label()
         CType(Me.gridKUIDs, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -46,7 +47,7 @@ Partial Class Form1
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(120, 17)
         Me.Label2.TabIndex = 17
-        Me.Label2.Text = "by vvmm (c) 2017"
+        Me.Label2.Text = "by vvmm (c) 2018"
         '
         'LinkLabel1
         '
@@ -121,6 +122,7 @@ Partial Class Form1
         Me.gridKUIDs.Location = New System.Drawing.Point(16, 38)
         Me.gridKUIDs.Name = "gridKUIDs"
         Me.gridKUIDs.RowHeadersVisible = False
+        Me.gridKUIDs.RowHeadersWidth = 51
         Me.gridKUIDs.RowTemplate.Height = 24
         Me.gridKUIDs.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
         Me.gridKUIDs.Size = New System.Drawing.Size(843, 394)
@@ -157,12 +159,26 @@ Partial Class Form1
         '
         Me.OpenFileDialog1.CheckFileExists = False
         '
+        'lblProgress
+        '
+        Me.lblProgress.AutoSize = True
+        Me.lblProgress.BackColor = System.Drawing.Color.White
+        Me.lblProgress.Font = New System.Drawing.Font("Microsoft Sans Serif", 13.8!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblProgress.ForeColor = System.Drawing.Color.Red
+        Me.lblProgress.Location = New System.Drawing.Point(213, 213)
+        Me.lblProgress.Name = "lblProgress"
+        Me.lblProgress.Size = New System.Drawing.Size(452, 29)
+        Me.lblProgress.TabIndex = 30
+        Me.lblProgress.Text = "Please wait... Operation in progress..."
+        Me.lblProgress.Visible = False
+        '
         'Form1
         '
         Me.AllowDrop = True
         Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(871, 482)
+        Me.Controls.Add(Me.lblProgress)
         Me.Controls.Add(Me.Button5)
         Me.Controls.Add(Me.Button4)
         Me.Controls.Add(Me.Button3)
@@ -179,7 +195,7 @@ Partial Class Form1
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.MaximizeBox = False
         Me.Name = "Form1"
-        Me.Text = "CDP Explorer v2.0"
+        Me.Text = "CDP Explorer v2.1"
         CType(Me.gridKUIDs, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
@@ -198,4 +214,5 @@ Partial Class Form1
     Friend WithEvents Button4 As Button
     Friend WithEvents Button5 As Button
     Friend WithEvents OpenFileDialog1 As OpenFileDialog
+    Friend WithEvents lblProgress As Label
 End Class
