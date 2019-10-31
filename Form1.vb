@@ -198,12 +198,20 @@ Public Class Form1
                         Cera = System.Text.Encoding.UTF8.GetString(tagString)
                     ElseIf System.Text.Encoding.UTF8.GetString(tagName) = "category-class" Then
                         Cclass = System.Text.Encoding.UTF8.GetString(tagString)
+                    ElseIf System.Text.Encoding.UTF8.GetString(tagName) = "kuid" Then
+                        'exceptie: pentru unele asseturi vechi kuid poate fi si string.
+                        Ckuid = "<kuid:" & System.Text.Encoding.UTF8.GetString(tagString) & ">"
+                    ElseIf System.Text.Encoding.UTF8.GetString(tagName) = "asset-filename" Then
+                        'This is the case for old assets which do not have username
+                        If Cusername = "Untitled" Then
+                            Cusername = System.Text.Encoding.UTF8.GetString(tagString)
+                        End If
                     End If
 
-                    'expandedChump = expandedChump &
-                    'Space(IIf(40 - tagNameSize - 1 - level * 2 < 2, 2, 40 - tagNameSize - 1 - level * 2)) &
-                    '"""" & System.Text.Encoding.UTF8.GetString(tagString) & """"
-                End If
+                        'expandedChump = expandedChump &
+                        'Space(IIf(40 - tagNameSize - 1 - level * 2 < 2, 2, 40 - tagNameSize - 1 - level * 2)) &
+                        '"""" & System.Text.Encoding.UTF8.GetString(tagString) & """"
+                    End If
             Case 4 'binary
                 If tagLength - tagNameSize - 4 > 0 Then 'otherwise it is a null string (not even a character)
                     Dim tagString(tagLength - tagNameSize - 4) As Byte
@@ -240,9 +248,9 @@ Public Class Form1
             kuidList = kuidList & Ckuid & ","
 
             Ckuid = ""
-            Cusername = ""
+            Cusername = "Untitled" 'This is the case for assets with tag "secret 1" which do not have username and asset-filename
             Ckind = ""
-            Cbuild = ""
+            Cbuild = "1.3"
             Cregion = ""
             Cera = ""
             Cclass = ""
@@ -484,9 +492,9 @@ Public Class Form1
             expandedChump = ""
             totalAssets = 0
             Ckuid = ""
-            Cusername = ""
+            Cusername = "Untitled" 'This is the case for assets with tag "secret 1" which do not have username and asset-filename
             Ckind = ""
-            Cbuild = ""
+            Cbuild = "1.3"
             Cregion = ""
             Cera = ""
             Cclass = ""
@@ -549,7 +557,7 @@ Public Class Form1
                 If status = True Then Exit While
             End While
 
-            If status = False Then Throw New Exception("The asset could not be found in the CDP!")
+            If status = False Then Throw New Exception("The asset " & wkuid & " could not be found in the CDP!")
 
         Catch ex As Exception
             MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
