@@ -195,7 +195,7 @@ Partial Class Form1
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.MaximizeBox = False
         Me.Name = "Form1"
-        Me.Text = "CDP Explorer v2.2"
+        Me.Text = "CDP Explorer v3.0 BETA"
         CType(Me.gridKUIDs, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
