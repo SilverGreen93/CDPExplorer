@@ -241,65 +241,71 @@ Public Class Form1
     ''' <param name="assetKuid">Kuid to search for</param>
     ''' <param name="exportPath">Path to write the new asset to</param>
     Sub ExtractContent(ByRef assetKuid As Kuid, ByRef exportPath As String)
-        CopyCDP(assetKuid)
+        If CopyCDP(assetKuid) = False Then Exit Sub
 
-        'add the "assets" container
-        bytesCopied(&H14) = 7
-        Array.Copy(System.Text.Encoding.ASCII.GetBytes("assets"), 0, bytesCopied, &H15, 6)
-        bytesCopied(&H1B) = 0
-        bytesCopied(&H1C) = 0
+        Try
+            'add the "assets" container
+            bytesCopied(&H14) = 7
+            Array.Copy(System.Text.Encoding.ASCII.GetBytes("assets"), 0, bytesCopied, &H15, 6)
+            bytesCopied(&H1B) = 0
+            bytesCopied(&H1C) = 0
 
-        'compute the length of the "assets" container:
-        'this is the length to the end of the "assets" container without the header and the length field itself
-        Array.Copy(BitConverter.GetBytes(bytesCopied.Length - &H14), 0, bytesCopied, &H10, 4)
+            'compute the length of the "assets" container:
+            'this is the length to the end of the "assets" container without the header and the length field itself
+            Array.Copy(BitConverter.GetBytes(bytesCopied.Length - &H14), 0, bytesCopied, &H10, 4)
 
-        'this is how much we've extracted
-        Dim currentLength As Integer = bytesCopied.Length
+            'this is how much we've extracted
+            Dim currentLength As Integer = bytesCopied.Length
 
-        'add the final tags and containers (rawData below)
-        '    contents-table
-        '    {
-        '	     0   <kuid:0:0>
-        '    }
-        '    kuid-table
-        '    {
-        '    }
-        '    obsolete-table
-        '    {
-        '    }
-        '    kind "archive"
-        '    package-version 1
-        '    username "unknown"
-        Dim rawData As Byte() = {
-                                    &H21, &H0, &H0, &H0, &HF, &H63, &H6F, &H6E, &H74, &H65, &H6E, &H74,
-                                    &H73, &H2D, &H74, &H61, &H62, &H6C, &H65, &H0, &H0, &HC, &H0, &H0,
-                                    &H0, &H2, &H30, &H0, &HD, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0,
-                                    &HD, &H0, &H0, &H0, &HB, &H6B, &H75, &H69, &H64, &H2D, &H74, &H61,
-                                    &H62, &H6C, &H65, &H0, &H0,
-                                    &H11, &H0, &H0, &H0, &HF, &H6F, &H62, &H73, &H6F, &H6C, &H65, &H74,
-                                    &H65, &H2D, &H74, &H61, &H62, &H6C, &H65, &H0, &H0, &HF, &H0, &H0,
-                                    &H0, &H5, &H6B, &H69, &H6E, &H64, &H0, &H3, &H61, &H72, &H63, &H68,
-                                    &H69, &H76, &H65, &H0, &H16, &H0, &H0, &H0, &H10, &H70, &H61, &H63,
-                                    &H6B, &H61, &H67, &H65, &H2D, &H76, &H65, &H72, &H73, &H69, &H6F, &H6E,
-                                    &H0, &H1, &H1, &H0, &H0, &H0, &H13, &H0, &H0, &H0, &H9, &H75,
-                                    &H73, &H65, &H72, &H6E, &H61, &H6D, &H65, &H0, &H3, &H75, &H6E, &H6B,
-                                    &H6E, &H6F, &H77, &H6E, &H0
-                                }
+            'add the final tags and containers (rawData below)
+            '    contents-table
+            '    {
+            '	     0   <kuid:0:0>
+            '    }
+            '    kuid-table
+            '    {
+            '    }
+            '    obsolete-table
+            '    {
+            '    }
+            '    kind "archive"
+            '    package-version 1
+            '    username "unknown"
+            Dim rawData As Byte() = {
+                                        &H21, &H0, &H0, &H0, &HF, &H63, &H6F, &H6E, &H74, &H65, &H6E, &H74,
+                                        &H73, &H2D, &H74, &H61, &H62, &H6C, &H65, &H0, &H0, &HC, &H0, &H0,
+                                        &H0, &H2, &H30, &H0, &HD, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0,
+                                        &HD, &H0, &H0, &H0, &HB, &H6B, &H75, &H69, &H64, &H2D, &H74, &H61,
+                                        &H62, &H6C, &H65, &H0, &H0,
+                                        &H11, &H0, &H0, &H0, &HF, &H6F, &H62, &H73, &H6F, &H6C, &H65, &H74,
+                                        &H65, &H2D, &H74, &H61, &H62, &H6C, &H65, &H0, &H0, &HF, &H0, &H0,
+                                        &H0, &H5, &H6B, &H69, &H6E, &H64, &H0, &H3, &H61, &H72, &H63, &H68,
+                                        &H69, &H76, &H65, &H0, &H16, &H0, &H0, &H0, &H10, &H70, &H61, &H63,
+                                        &H6B, &H61, &H67, &H65, &H2D, &H76, &H65, &H72, &H73, &H69, &H6F, &H6E,
+                                        &H0, &H1, &H1, &H0, &H0, &H0, &H13, &H0, &H0, &H0, &H9, &H75,
+                                        &H73, &H65, &H72, &H6E, &H61, &H6D, &H65, &H0, &H3, &H75, &H6E, &H6B,
+                                        &H6E, &H6F, &H77, &H6E, &H0
+                                    }
 
-        'make room for the final tags
-        ReDim Preserve bytesCopied(UBound(bytesCopied) + rawData.Length)
+            'make room for the final tags
+            ReDim Preserve bytesCopied(UBound(bytesCopied) + rawData.Length)
 
-        'copy the last tags to the end
-        Array.Copy(rawData, 0, bytesCopied, currentLength, rawData.Length)
+            'copy the last tags to the end
+            Array.Copy(rawData, 0, bytesCopied, currentLength, rawData.Length)
 
-        'write the kuid of the asset in the contents-table
-        Array.Copy(assetKuid.GetKuidAsBytes(), 0, bytesCopied, currentLength + &H1D, 8)
+            'write the kuid of the asset in the contents-table
+            Array.Copy(assetKuid.GetKuidAsBytes(), 0, bytesCopied, currentLength + &H1D, 8)
 
-        'compute the total length of the file and write it at the beginning
-        Array.Copy(BitConverter.GetBytes(bytesCopied.Length - &H10), 0, bytesCopied, &HC, 4)
+            'compute the total length of the file and write it at the beginning
+            Array.Copy(BitConverter.GetBytes(bytesCopied.Length - &H10), 0, bytesCopied, &HC, 4)
 
-        'write the file to disk
-        File.WriteAllBytes(exportPath & "\" & assetKuid.GetKuidAsString().Replace("<", "").Replace(":", " ").Replace(">", "") & ".cdp", bytesCopied)
+            'write the file to disk
+            File.WriteAllBytes(exportPath & "\" & assetKuid.GetKuidAsString().Replace("<", "").Replace(":", " ").Replace(">", "") & ".cdp", bytesCopied)
+
+        Catch ex As Exception
+            MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            lblProgress.Visible = False
+        End Try
 
         'free memory and reset array
         ReDim bytesCopied(15)
@@ -309,11 +315,12 @@ Public Class Form1
     ''' Start searching for the required kuid in the file
     ''' </summary>
     ''' <param name="assetKuid">The kuid to search for</param>
-    Sub CopyCDP(ByRef assetKuid As Kuid)
+    ''' <returns>True if kuid is found</returns>
+    Function CopyCDP(ByRef assetKuid As Kuid) As Boolean
         Dim FileStr As BinaryReader
         Dim status As Boolean
 
-        If Not My.Computer.FileSystem.FileExists(fileName) Then Exit Sub
+        If Not My.Computer.FileSystem.FileExists(fileName) Then Return False
 
         Try
             FileStr = New BinaryReader(IO.File.Open(fileName, FileMode.Open))
@@ -353,7 +360,8 @@ Public Class Form1
             lblProgress.Visible = False
         End Try
 
-    End Sub
+        Return status
+    End Function
 
     ''' <summary>
     ''' Copy all the SubTags after finding the required kuid recursively.
@@ -363,7 +371,7 @@ Public Class Form1
     ''' <param name="Depth">Depth of the current container</param>
     ''' <param name="ParentContainer">Parent container name</param>
     ''' <param name="assetKuid">The kuid to search for</param>
-    ''' <returns></returns>
+    ''' <returns>True if kuid is found</returns>
     Function CopySubTags(ByRef FileStr As BinaryReader, ByVal Depth As Integer, ByVal ParentContainer As String, ByRef assetKuid As Kuid) As Boolean
         Dim tagLength As UInteger = FileStr.ReadUInt32()
         Dim tagNameSize As Byte = FileStr.ReadByte()
