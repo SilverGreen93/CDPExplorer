@@ -2,7 +2,7 @@
 
 Public Class Kuid
 
-    Private kuidValue(7) As Byte
+    Private ReadOnly kuidValue(7) As Byte
 
     Sub New()
         kuidValue = New Byte() {0, 0, 0, 0, 0, 0, 0, 0}
@@ -113,10 +113,6 @@ Public Class Kuid
         For i As Integer = 0 To 3
             kuidValue(i) = BitConverter.GetBytes(userID)(i)
         Next
-
-        'if the number overflows extend the sign
-        If userID > 16777215 Then kuidValue(3) = &HFF
-
         Return True
     End Function
 
@@ -169,9 +165,10 @@ Public Class Kuid
     ''' <returns>True if version is valid</returns>
     Public Function SetVersion(ByVal ver As Byte) As Boolean
         'check version number and integrate into userBytes if userBytes is not negative
-        If (ver > 0 AndAlso ver < 128 AndAlso GetUserID() >= 0) Then
+        If ver >= 0 AndAlso ver < 128 Then
             'add the version number to byte 4 of userBytes and keep sign bit on bit 0
-            kuidValue(3) = ver << 1
+            kuidValue(3) = kuidValue(3) And 1
+            kuidValue(3) = kuidValue(3) Or (ver << 1)
             Return True
         Else
             Return False
@@ -180,13 +177,18 @@ Public Class Kuid
 
     ''' <summary>
     ''' Get kuid as human-readable string: &lt;kuid:474195:10010&gt;
+    ''' If version is > 0, return kuid2: &lt;kuid2:474195:10010:1&gt;
     ''' </summary>
     ''' <returns>Kuid as human-readable string</returns>
     Public Function GetKuidAsString() As String
         Dim kuidString As String = "<kuid"
         Dim version As Byte = GetVersion()
+        Dim needKuid2 As Boolean =
+            (version > 0 AndAlso GetUserID() > 0) OrElse
+            (version = 0 AndAlso GetUserID() < 0)
+        'otherwise if UserID < 0 version is always 127 and we don't show the version
 
-        If version > 0 Then
+        If needKuid2 Then
             kuidString &= "2:"
         Else
             kuidString &= ":"
@@ -196,10 +198,27 @@ Public Class Kuid
         kuidString &= ":"
         kuidString &= GetContentID()
 
-        If version > 0 Then
+        If needKuid2 Then
             kuidString = kuidString & ":" & version
         End If
 
+        kuidString &= ">"
+
+        Return kuidString
+    End Function
+
+    ''' <summary>
+    ''' Get kuid as kuid2 human-readable string even if version is 0: &lt;kuid2:474195:10010:0&gt;
+    ''' </summary>
+    ''' <returns>Kuid as human-readable string</returns>
+    Public Function GetKuid2AsString() As String
+        Dim kuidString As String = "<kuid2:"
+
+        kuidString &= GetUserID()
+        kuidString &= ":"
+        kuidString &= GetContentID()
+        kuidString &= ":"
+        kuidString &= GetVersion()
         kuidString &= ">"
 
         Return kuidString
@@ -267,7 +286,7 @@ Public Class Kuid
     ''' </summary>
     ''' <returns>Kuid version as byte</returns>
     Public Function GetVersion() As Byte
-        If GetUserID() < 0 Then Return 0 'version is always 0 when User ID is negative
+        'if the UserID is negative, version will be 127, or 0 if is the result of an overflow in UserID
         Return Convert.ToInt32(kuidValue(3) >> 1) 'version is upper 7 bits of userByte 3
     End Function
 
@@ -334,23 +353,34 @@ Public Class Kuid
     ''' Debug kuid conversion at limits and overflow
     ''' </summary>
     Public Sub DebugKuid()
+        SetKuidAsHexString("01 00 00 01 40 E2 01 00")
+        Debug.Assert(GetKuidAsString() = "<kuid2:-16777215:123456:0>", "Kuid conversion failed!")
+
+        SetKuidAsHexString("01 00 00 FF 40 E2 01 00")
+        Debug.Assert(GetKuidAsString() = "<kuid:-16777215:123456>", "Kuid conversion failed!")
+
         SetKuid("<kuid:16777400:123456>")
-        Debug.Assert(GetKuidAsHexString() = "B8 00 00 FF 40 E2 01 00", "Kuid conversion failed!")
-        Debug.Assert(GetUserID() = -16777032, "Kuid value failed!")
-        Debug.Assert(GetContentID() = 123456, "Kuid value failed!")
-        Debug.Assert(GetVersion() = 0, "Kuid value failed!")
+        Debug.Assert(GetKuidAsHexString() = "B8 00 00 01 40 E2 01 00", "Kuid conversion failed!")
+        Debug.Assert(GetKuidAsString() = "<kuid2:-16777032:123456:0>", "Kuid conversion failed!")
+        Debug.Assert(GetKuid2AsString() = "<kuid2:-16777032:123456:0>", "Kuid conversion failed!")
+
+        SetKuidAsHexString("01 00 00 01 0A B1 21 00")
+        Debug.Assert(GetKuidAsString() = "<kuid2:-16777215:2208010:0>", "Kuid conversion failed!")
+
+        SetKuid("<kuid2:-16777215:2208010:0>")
+        Debug.Assert(GetKuidAsHexString() = "01 00 00 01 0A B1 21 00", "Kuid conversion failed!")
 
         SetKuidAsHexString("B8 00 00 FF 40 E2 01 00")
         Debug.Assert(GetKuidAsString() = "<kuid:-16777032:123456>", "Kuid conversion failed!")
+
+        SetKuidAsHexString("B8 00 00 01 40 E2 01 00")
+        Debug.Assert(GetKuidAsString() = "<kuid2:-16777032:123456:0>", "Kuid conversion failed!")
 
         SetKuid("<kuid:-16777032:123456>")
         Debug.Assert(GetKuidAsHexString() = "B8 00 00 FF 40 E2 01 00", "Kuid conversion failed!")
 
         SetKuid("<kuid:-16777400:123456>")
         Debug.Assert(GetKuidAsHexString() = "48 FF FF FE 40 E2 01 00", "Kuid conversion failed!")
-        Debug.Assert(GetUserID() = 16777032, "Kuid value failed!")
-        Debug.Assert(GetContentID() = 123456, "Kuid value failed!")
-        Debug.Assert(GetVersion() = 127, "Kuid value failed!")
 
         SetKuidAsHexString("48 FF FF FE 40 E2 01 00")
         Debug.Assert(GetKuidAsString() = "<kuid2:16777032:123456:127>", "Kuid conversion failed!")
@@ -360,14 +390,17 @@ Public Class Kuid
 
         SetKuid("<kuid:-1:100503>")
         Debug.Assert(GetKuidHash() = &H1E, "Kuid hashing failed!")
+        Debug.Assert(GetKuidAsString() = "<kuid:-1:100503>", "Kuid conversion failed!")
+        Debug.Assert(GetKuid2AsString() = "<kuid2:-1:100503:127>", "Kuid conversion failed!")
         SetVersion(50)
-        Debug.Assert(GetVersion() = 0, "Kuid value failed!")
+        Debug.Assert(GetVersion() = 50, "Kuid value failed!")
+        Debug.Assert(GetKuidAsString() = "<kuid:-1:100503>", "Kuid conversion failed!")
 
         SetKuid("<kuid:-25:581>")
         Debug.Assert(GetKuidHash() = &H5F, "Kuid hashing failed!")
         Debug.Assert(GetUserID() = -25, "Kuid value failed!")
         Debug.Assert(GetContentID() = 581, "Kuid value failed!")
-        Debug.Assert(GetVersion() = 0, "Kuid value failed!")
+        Debug.Assert(GetVersion() = 127, "Kuid value failed!")
 
         SetKuid("<kuid:276266:100101>")
         Debug.Assert(GetKuidHash() = &H9A, "Kuid hashing failed!")

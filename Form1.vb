@@ -382,7 +382,7 @@ Public Class Form1
         tagName = System.Text.Encoding.UTF8.GetString(FileStr.ReadBytes(tagNameSize - 1))
         FileStr.ReadByte() 'null terminator
 
-        'we found the asset with the required kuid
+        'Check if we found the asset with the required kuid
         If tagName = assetKuid.GetKuidAsString() AndAlso ParentContainer = "assets" Then
             'resize the bytesCopied array to make room for our asset
             ReDim Preserve bytesCopied(UBound(bytesCopied) + tagLength + 13 + 4) '13 is the length of the "assets" tag
@@ -393,7 +393,7 @@ Public Class Form1
             Return True
         End If
 
-        'if kuid is not found yet, continue to parse containers recursively until found
+        'If kuid is not found yet, continue to parse containers recursively until found
 
         Dim tagType As Byte = FileStr.ReadByte()
 
@@ -416,7 +416,7 @@ Public Class Form1
             FileStr.BaseStream.Seek(tagLength - tagNameSize - 2, SeekOrigin.Current)
         End If
 
-        'we didn't find the required kuid
+        'We didn't find the required kuid
         Return False
     End Function
 
