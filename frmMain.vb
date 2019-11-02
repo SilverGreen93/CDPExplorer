@@ -1,6 +1,8 @@
-﻿Imports System.IO
+﻿Imports System.ComponentModel
+Imports System.IO
 
-Public Class Form1
+Public Class frmMain
+
     Dim fileName As String
     Dim kuidList As String
     Dim kuidNameList As String
@@ -8,6 +10,12 @@ Public Class Form1
     Dim lastIndex As Integer 'for search purposes (find box)
     Dim bytesCopied(15) As Byte 'for extracting assets from cdp
     Dim currentAsset As Asset
+    Public findString As String
+
+    Enum ProcessingType
+        EXTRACT_ALL
+        EXTRACT_SELECTED
+    End Enum
 
     Sub ResetData()
         kuidList = ""
@@ -17,7 +25,7 @@ Public Class Form1
     End Sub
 
     Sub InitializeGrid()
-        gridKUIDs.ColumnCount = 7
+        gridKUIDs.ColumnCount = 8
         gridKUIDs.Columns(0).Name = "KUID"
         gridKUIDs.Columns(1).Name = "Username"
         gridKUIDs.Columns(2).Name = "Kind"
@@ -25,6 +33,7 @@ Public Class Form1
         gridKUIDs.Columns(4).Name = "Build"
         gridKUIDs.Columns(5).Name = "Region"
         gridKUIDs.Columns(6).Name = "Era"
+        gridKUIDs.Columns(7).Name = "Description"
 
         gridKUIDs.Columns(0).ReadOnly = True
         gridKUIDs.Columns(1).ReadOnly = True
@@ -33,6 +42,14 @@ Public Class Form1
         gridKUIDs.Columns(4).ReadOnly = True
         gridKUIDs.Columns(5).ReadOnly = True
         gridKUIDs.Columns(6).ReadOnly = True
+        gridKUIDs.Columns(7).ReadOnly = True
+    End Sub
+
+    Sub SetTitle()
+        Text = My.Application.Info.Title & " v" & My.Application.Info.Version.Major & "." & My.Application.Info.Version.Minor
+        If fileName <> "" Then
+            Text &= " - " & fileName
+        End If
     End Sub
 
     ''' <summary>
@@ -68,8 +85,8 @@ Public Class Form1
 
         If Not My.Computer.FileSystem.FileExists(fileName) Then Exit Sub
 
-        'Try
-        fileStr = New BinaryReader(File.Open(fileName, FileMode.Open))
+        Try
+            fileStr = New BinaryReader(File.Open(fileName, FileMode.Open))
 
             fileStr.BaseStream.Seek(0, SeekOrigin.Begin)
 
@@ -101,14 +118,14 @@ Public Class Form1
             End While
 
             lblCount.Text = totalAssets & " assets."
-            gridKUIDs.Rows.RemoveAt(0)
+            kuidList = kuidList.Remove(kuidList.Length - 1) 'remove the trailing comma
+            gridKUIDs.Rows.RemoveAt(0) 'remove the first row, it is empty
 
             fileStr.Close()
 
-        'Catch ex As Exception
-        '    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-        '    lblProgress.Visible = False
-        'End Try
+        Catch ex As Exception
+            MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
 
     End Sub
 
@@ -219,15 +236,16 @@ Public Class Form1
 
         If ParentContainer = "assets" Then
             totalAssets += 1
-            kuidList = kuidList & currentAsset.AssetKuid.GetKuidAsString() & ","
-            kuidNameList = kuidNameList & currentAsset.Username & ", " & currentAsset.AssetKuid.GetKuidAsString() & vbCrLf
+            kuidList &= currentAsset.AssetKuid.GetKuidAsString() & ","
+            kuidNameList &= currentAsset.AssetKuid.GetKuidAsString() & " " & currentAsset.Username & vbCrLf
             gridKUIDs.Rows.Add(New String() {currentAsset.AssetKuid.GetKuidAsString(),
                                             currentAsset.Username,
                                             currentAsset.Kind,
                                             currentAsset.CategoryClass,
                                             currentAsset.TrainzBuild,
                                             currentAsset.CategoryRegion,
-                                            currentAsset.CategoryEra})
+                                            currentAsset.CategoryEra,
+                                            currentAsset.Description})
 
             'Reset the asset details
             currentAsset = New Asset()
@@ -304,7 +322,6 @@ Public Class Form1
 
         Catch ex As Exception
             MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            lblProgress.Visible = False
         End Try
 
         'free memory and reset array
@@ -357,7 +374,6 @@ Public Class Form1
 
         Catch ex As Exception
             MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            lblProgress.Visible = False
         End Try
 
         Return status
@@ -420,20 +436,20 @@ Public Class Form1
         Return False
     End Function
 
-    Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+    Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        SetTitle()
         InitializeGrid()
+        gridKUIDs.Width = Width - gridKUIDs.Left - 24
+        gridKUIDs.Height = Height - gridKUIDs.Top - StatusStrip.Height - 50
         Dim files As String() = My.Application.CommandLineArgs.ToArray
         If files.Length > 0 Then
-            lblProgress.Visible = True
             fileName = files(0)
+            SetTitle()
+            lblStatus.Text = "Processing..."
             Application.DoEvents()
             ParseChump(fileName)
-            lblProgress.Visible = False
+            lblStatus.Text = "Ready."
         End If
-    End Sub
-
-    Private Sub LinkLabel1_LinkClicked(sender As Object, e As LinkLabelLinkClickedEventArgs) Handles LinkLabel1.LinkClicked
-        Process.Start("http://vvmm.freeforums.org/")
     End Sub
 
     'a new instance of the application was started with new arguments
@@ -441,80 +457,49 @@ Public Class Form1
         If args.Length > 0 Then
             Dim files As String() = args.ToArray
             If files.Length > 0 Then
-                lblProgress.Visible = True
                 fileName = files(0)
+                SetTitle()
+                lblStatus.Text = "Processing..."
                 Application.DoEvents()
                 ParseChump(fileName)
-                lblProgress.Visible = False
+                lblStatus.Text = "Ready."
             End If
         End If
     End Sub
 
-    Private Sub Form1_DragDrop(sender As Object, e As DragEventArgs) Handles Me.DragDrop
+    Private Sub frmMain_DragDrop(sender As Object, e As DragEventArgs) Handles Me.DragDrop
         Dim files As String() = e.Data.GetData(DataFormats.FileDrop)
         If files.Length > 0 Then
-            lblProgress.Visible = True
             fileName = files(0)
+            SetTitle()
+            lblStatus.Text = "Processing..."
             Application.DoEvents()
             ParseChump(fileName)
-            lblProgress.Visible = False
+            lblStatus.Text = "Ready."
         End If
     End Sub
 
-    Private Sub Form1_DragEnter(sender As Object, e As DragEventArgs) Handles Me.DragEnter
+    Private Sub frmMain_DragEnter(sender As Object, e As DragEventArgs) Handles Me.DragEnter
         If e.Data.GetDataPresent(DataFormats.FileDrop) Then
             e.Effect = DragDropEffects.Copy
         End If
     End Sub
 
-    Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
-        OpenFileDialog1.Title = "Select folder to extract to"
-        OpenFileDialog1.FileName = "CDP Folder"
-
-        If OpenFileDialog1.ShowDialog <> vbOK Then Exit Sub
-
-        lblProgress.Visible = True
-        Application.DoEvents()
-        For row As Integer = 0 To gridKUIDs.SelectedRows.Count - 1
-            ExtractContent(New Kuid(gridKUIDs.SelectedRows(row).Cells(0).Value.ToString), Path.GetDirectoryName(OpenFileDialog1.FileName))
-        Next
-        lblProgress.Visible = False
-
-        MessageBox.Show("Extracting assets to CDPs finished!", "Ready", MessageBoxButtons.OK, MessageBoxIcon.Information)
-    End Sub
-
-    Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
-        OpenFileDialog1.Title = "Select folder to extract to"
-        OpenFileDialog1.FileName = "CDP Folder"
-
-        If OpenFileDialog1.ShowDialog <> vbOK Then Exit Sub
-
-        lblProgress.Visible = True
-        Application.DoEvents()
-        For row As Integer = 0 To gridKUIDs.Rows.Count - 1
-            ExtractContent(New Kuid(gridKUIDs.Rows(row).Cells(0).Value.ToString), Path.GetDirectoryName(OpenFileDialog1.FileName))
-        Next
-        lblProgress.Visible = False
-
-        MessageBox.Show("Extracting assets to CDPs finished!", "Ready", MessageBoxButtons.OK, MessageBoxIcon.Information)
-    End Sub
-
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
-        My.Computer.Clipboard.SetText(kuidList)
-    End Sub
-
-    Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
-        My.Computer.Clipboard.SetText(kuidNameList)
-    End Sub
-
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+    Public Sub FindText(ByVal str As String)
         Dim searchIndex = 0
         Dim found As Boolean = False
+        findString = str
+
+        If findString = "" Then
+            frmFind.Show()
+            Exit Sub
+        End If
+
         gridKUIDs.ClearSelection()
         For Each row As DataGridViewRow In gridKUIDs.Rows
             For Each cell As DataGridViewCell In row.Cells
                 If cell.Value = Nothing Then Continue For
-                If CStr(cell.Value).Contains(TextBox1.Text) Then
+                If CStr(cell.Value).Contains(findString) Then
                     If searchIndex = lastIndex Then
                         'This is the cell we want to select
                         cell.Selected = True
@@ -529,12 +514,190 @@ Public Class Form1
         Next
         If found = True Then
             lastIndex += 1
-            If lastIndex = searchIndex Then lastIndex = 0
-        Else
+            If lastIndex = searchIndex Then 'wrap around
+                lastIndex = 0
+                Beep()
+            End If
+        Else 'not found
             lastIndex = 0
-            MessageBox.Show("String not found!")
+            Beep()
         End If
-
     End Sub
 
+    Private Sub CopyKUIDListToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles CopyKUIDListToolStripMenuItem.Click
+        My.Computer.Clipboard.SetText(kuidList)
+    End Sub
+
+    Private Sub CopyAssetListToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles CopyAssetListToolStripMenuItem.Click
+        My.Computer.Clipboard.SetText(kuidNameList)
+    End Sub
+
+    Private Sub ExtractAsCDPToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExtractAsCDPToolStripMenuItem.Click
+        If FolderBrowserDialog.ShowDialog() <> vbOK Then Exit Sub
+        BackgroundWorker.RunWorkerAsync(ProcessingType.EXTRACT_SELECTED)
+        frmProgress.ShowDialog()
+    End Sub
+
+    Private Sub ExtractAllAsCDPToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExtractAllAsCDPToolStripMenuItem.Click
+        If FolderBrowserDialog.ShowDialog() <> vbOK Then Exit Sub
+        BackgroundWorker.RunWorkerAsync(ProcessingType.EXTRACT_ALL)
+        frmProgress.ShowDialog()
+    End Sub
+
+    Private Sub AboutToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles AboutToolStripMenuItem.Click
+        frmAbout.ShowDialog()
+    End Sub
+
+    Private Sub BackgroundWorker_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs) Handles BackgroundWorker.DoWork
+        Dim extractionMethod As ProcessingType = e.Argument
+
+        If extractionMethod = ProcessingType.EXTRACT_ALL Then
+            For row As Integer = 0 To gridKUIDs.Rows.Count - 1
+                ExtractContent(New Kuid(gridKUIDs.Rows(row).Cells(0).Value.ToString), FolderBrowserDialog.SelectedPath)
+                BackgroundWorker.ReportProgress(row / gridKUIDs.Rows.Count * 100)
+                If BackgroundWorker.CancellationPending Then Exit For
+            Next
+        ElseIf extractionMethod = ProcessingType.EXTRACT_SELECTED Then
+            For row As Integer = 0 To gridKUIDs.SelectedRows.Count - 1
+                ExtractContent(New Kuid(gridKUIDs.SelectedRows(row).Cells(0).Value.ToString), FolderBrowserDialog.SelectedPath)
+                BackgroundWorker.ReportProgress(row / gridKUIDs.SelectedRows.Count * 100)
+                If BackgroundWorker.CancellationPending Then Exit For
+            Next
+        End If
+    End Sub
+
+    Private Sub BackgroundWorker_RunWorkerCompleted(sender As Object, e As RunWorkerCompletedEventArgs) Handles BackgroundWorker.RunWorkerCompleted
+        frmProgress.Close()
+    End Sub
+
+    Private Sub BackgroundWorker_ProgressChanged(sender As Object, e As ProgressChangedEventArgs) Handles BackgroundWorker.ProgressChanged
+        frmProgress.ProgressBar.Value = e.ProgressPercentage
+    End Sub
+
+    Sub CopySelectedAssetsList()
+        Dim assetList As String = ""
+        For row As Integer = 0 To gridKUIDs.SelectedRows.Count - 1
+            assetList &= gridKUIDs.SelectedRows(row).Cells(0).Value.ToString & " " & gridKUIDs.SelectedRows(row).Cells(1).Value.ToString & vbCrLf
+        Next
+        My.Computer.Clipboard.SetText(assetList)
+    End Sub
+
+    Sub CopySelectedKuidsList()
+        Dim assetList As String = ""
+        For row As Integer = 0 To gridKUIDs.SelectedRows.Count - 1
+            assetList &= gridKUIDs.SelectedRows(row).Cells(0).Value.ToString & ","
+        Next
+        assetList = assetList.Remove(assetList.Length - 1) 'remove the trailing comma
+        My.Computer.Clipboard.SetText(assetList)
+    End Sub
+
+    Private Sub CopyAssetInfoToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles CopyAssetInfoToolStripMenuItem.Click
+        CopySelectedAssetsList()
+    End Sub
+
+    Private Sub CopyAssetInfoToolStripMenuItem1_Click(sender As Object, e As EventArgs) Handles CopyAssetInfoToolStripMenuItem1.Click
+        CopySelectedAssetsList()
+    End Sub
+
+    Private Sub CopyKUIDToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles CopyKUIDToolStripMenuItem.Click
+        CopySelectedKuidsList()
+    End Sub
+
+    Private Sub CopyKUIDToolStripMenuItem1_Click(sender As Object, e As EventArgs) Handles CopyKUIDToolStripMenuItem1.Click
+        CopySelectedKuidsList()
+    End Sub
+
+    Private Sub ExtractSelectedAsCDPToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExtractSelectedAsCDPToolStripMenuItem.Click
+        If FolderBrowserDialog.ShowDialog() <> vbOK Then Exit Sub
+        BackgroundWorker.RunWorkerAsync(ProcessingType.EXTRACT_SELECTED)
+        frmProgress.ShowDialog()
+    End Sub
+
+    Private Sub OpenCDPToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OpenCDPToolStripMenuItem.Click
+        OpenFileDialog.Title = "Open CDP"
+        OpenFileDialog.Filter = "CDP Files (*.cdp)|*.cdp"
+        OpenFileDialog.FileName = ""
+
+        If OpenFileDialog.ShowDialog() <> vbOK Then Exit Sub
+
+        fileName = OpenFileDialog.FileName
+        SetTitle()
+        lblStatus.Text = "Processing..."
+        Application.DoEvents()
+        ParseChump(fileName)
+        lblStatus.Text = "Ready."
+    End Sub
+
+    Private Sub frmMain_Resize(sender As Object, e As EventArgs) Handles Me.Resize
+        gridKUIDs.Width = Width - gridKUIDs.Left - 24
+        gridKUIDs.Height = Height - gridKUIDs.Top - StatusStrip.Height - 50
+    End Sub
+
+    Private Sub ExitToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExitToolStripMenuItem.Click
+        End
+    End Sub
+
+    Private Sub FindToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles FindToolStripMenuItem.Click
+        frmFind.Show()
+    End Sub
+
+    Private Sub FindNextToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles FindNextToolStripMenuItem.Click
+        FindText(findString)
+    End Sub
+
+    Sub ExportCSV()
+        Dim fName As String
+
+        SaveFileDialog.Filter = "CSV files (*.csv)|*.csv"
+        SaveFileDialog.FileName = ""
+
+        If SaveFileDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
+            fName = SaveFileDialog.FileName
+        Else
+            Exit Sub
+        End If
+
+        Dim i As Integer
+        Dim j As Integer
+        Dim cellvalue As String
+        Dim rowLine As String = ""
+
+        Try
+            Dim objWriter As New StreamWriter(fName, False)
+
+            'get header row
+            For i = 0 To gridKUIDs.Columns.Count - 1
+                rowLine &= gridKUIDs.Columns(i).Name & ","
+            Next
+
+            rowLine = rowLine.Remove(rowLine.Length - 1) 'remove the trailing comma
+            objWriter.WriteLine(rowLine)
+            rowLine = ""
+
+            'get rest of cells
+            For j = 0 To gridKUIDs.Rows.Count - 1
+                For i = 0 To gridKUIDs.Columns.Count - 1
+                    If Not TypeOf gridKUIDs.CurrentRow.Cells.Item(i).Value Is DBNull Then
+                        cellvalue = gridKUIDs.Item(i, j).Value
+                    Else
+                        cellvalue = ""
+                    End If
+                    rowLine &= cellvalue & ","
+                Next
+
+                rowLine = rowLine.Remove(rowLine.Length - 1) 'remove the trailing comma
+                objWriter.WriteLine(rowLine)
+                rowLine = ""
+            Next
+
+            objWriter.Close()
+
+        Catch ex As Exception
+            MessageBox.Show("Error occured while writing to file. " + ex.Message(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
+
+    Private Sub ExportAsCSVToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExportAsCSVToolStripMenuItem.Click
+        ExportCSV()
+    End Sub
 End Class
