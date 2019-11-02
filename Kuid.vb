@@ -58,9 +58,19 @@ Public Class Kuid
     End Function
 
     ''' <summary>
-    ''' Set kuid from 3 individual values
+    ''' Set kuid from User ID and Content ID
     ''' </summary>
     ''' <param name="userID">User ID</param>
+    ''' <param name="contentID">Content ID</param>
+    ''' <returns>True if all 2 are valid</returns>
+    Public Function SetKuid(ByVal userID As Integer, ByVal contentID As Integer) As Boolean
+        Return SetUserID(userID) AndAlso SetContentID(contentID)
+    End Function
+
+    ''' <summary>
+    ''' Set kuid2 from User ID, Content ID and Version
+    ''' </summary>
+    ''' <param name="userID">User ID (should be positive)</param>
     ''' <param name="contentID">Content ID</param>
     ''' <param name="version">Version</param>
     ''' <returns>True if all 3 are valid</returns>
@@ -76,7 +86,6 @@ Public Class Kuid
     Public Function SetKuid(ByRef kuid As String) As Boolean
         Dim userBytes(3), contentBytes(3) As Byte
         Dim kuidParts() As String
-        Dim kuidPartsInt(2) As Integer
 
         If kuid = "" Then 'null kuid
             Return False
@@ -88,49 +97,26 @@ Public Class Kuid
             Return False
         End If
 
-        Try
-            'convert the kuid parts to int (skip first part)
-            'ex: <kuid2:1234:5678:9>
-            'kuidParts(0) = "<kuid2"
-            'kuidParts(1) = "1234"
-            'kuidParts(2) = "5678"
-            'kuidParts(3) = "9>"
-            For i As Integer = 1 To kuidParts.Length - 1
-                kuidPartsInt(i - 1) = Val(kuidParts(i))
-            Next
+        SetUserID(Val(kuidParts(1)))
+        SetContentID(Val(kuidParts(2)))
+        If kuidParts.Length > 3 Then SetVersion(Val(kuidParts(3)))
 
-            'convert integers to Byte arrays
-            userBytes = BitConverter.GetBytes(kuidPartsInt(0))
-            contentBytes = BitConverter.GetBytes(kuidPartsInt(1))
-
-            'check version number and integrate into userBytes if userBytes is not negative
-            If (kuidPartsInt(2) > 0 AndAlso kuidPartsInt(2) < 128 AndAlso kuidPartsInt(0) >= 0) Then
-                'add the version number to byte 4 of userBytes and keep sign bit on bit 0
-                userBytes(3) = userBytes(3) Xor (CByte(kuidPartsInt(2)) << 1)
-            End If
-
-            'copy bytes
-            For i As Integer = 0 To 3
-                kuidValue(i) = userBytes(i)
-                kuidValue(i + 4) = contentBytes(i)
-            Next
-        Catch ex As Exception
-            MessageBox.Show(ex.ToString, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-        End Try
+        Return True
     End Function
 
     ''' <summary>
-    ''' Set kuid User ID from integer
+    ''' Set kuid User ID from a 25-bit integer
     ''' </summary>
-    ''' <param name="userID">User ID as integer</param>
-    ''' <returns>True if userID is valid</returns>
+    ''' <param name="userID">User ID as a 25-bit integer</param>
+    ''' <returns>Always True</returns>
     Public Function SetUserID(ByVal userID As Integer) As Boolean
-        If userID > 16777215 OrElse userID < -16777216 Then
-            Return False
-        End If
         For i As Integer = 0 To 3
             kuidValue(i) = BitConverter.GetBytes(userID)(i)
         Next
+
+        'if the number overflows extend the sign
+        If userID > 16777215 Then kuidValue(3) = &HFF
+
         Return True
     End Function
 
@@ -185,7 +171,7 @@ Public Class Kuid
         'check version number and integrate into userBytes if userBytes is not negative
         If (ver > 0 AndAlso ver < 128 AndAlso GetUserID() >= 0) Then
             'add the version number to byte 4 of userBytes and keep sign bit on bit 0
-            kuidValue(3) = kuidValue(3) Xor (CByte(ver) << 1)
+            kuidValue(3) = ver << 1
             Return True
         Else
             Return False
@@ -198,36 +184,24 @@ Public Class Kuid
     ''' <returns>Kuid as human-readable string</returns>
     Public Function GetKuidAsString() As String
         Dim kuidString As String = "<kuid"
-        Dim userBytes(3), contentBytes(3) As Byte
-        Dim version As Integer
+        Dim version As Byte = GetVersion()
 
-        Array.Copy(kuidValue, 0, userBytes, 0, 4)
-        Array.Copy(kuidValue, 4, contentBytes, 0, 4)
-
-        If (userBytes(3) And (1 << 0)) <> 0 Then
-            'If the UserID is negative, ignore version
-            version = 0
-        Else
-            version = Convert.ToInt32(userBytes(3) >> 1) 'version is upper 7 bits of userByte 4
-            userBytes(3) = userBytes(3) And &H1 'keep only the sign bit (bit 0)
-        End If
-
-        'kuid or kuid2
-        If version <> 0 Then
+        If version > 0 Then
             kuidString &= "2:"
         Else
             kuidString &= ":"
         End If
 
-        kuidString &= BitConverter.ToInt32(userBytes, 0)
+        kuidString &= GetUserID()
         kuidString &= ":"
-        kuidString &= BitConverter.ToInt32(contentBytes, 0)
+        kuidString &= GetContentID()
 
-        If version <> 0 Then
+        If version > 0 Then
             kuidString = kuidString & ":" & version
         End If
 
         kuidString &= ">"
+
         Return kuidString
     End Function
 
@@ -246,7 +220,15 @@ Public Class Kuid
     Public Function GetUserID() As Integer
         Dim userBytes(3) As Byte
         Array.Copy(kuidValue, 0, userBytes, 0, 4)
-        userBytes(3) = userBytes(3) And &H1 'keep only the sign bit (bit 0), strip version
+
+        'from byte 3 keep only the sign bit (bit 24), strip version bits
+        userBytes(3) = userBytes(3) And 1
+
+        'if sign bit (bit 24) is set (is negative), sign extend to 32 bit
+        If userBytes(3) And 1 = 1 Then
+            userBytes(3) = &HFF
+        End If
+
         Return BitConverter.ToInt32(userBytes, 0)
     End Function
 
@@ -285,7 +267,8 @@ Public Class Kuid
     ''' </summary>
     ''' <returns>Kuid version as byte</returns>
     Public Function GetVersion() As Byte
-        Return Convert.ToInt32(kuidValue(3) >> 1) 'version is upper 7 bits of userByte 4
+        If GetUserID() < 0 Then Return 0 'version is always 0 when User ID is negative
+        Return Convert.ToInt32(kuidValue(3) >> 1) 'version is upper 7 bits of userByte 3
     End Function
 
     ''' <summary>
@@ -300,7 +283,7 @@ Public Class Kuid
                 hash = hash Xor kuidValue(i)
             Next
             'version does not affect the hash, so xor that out only if UserID is positive
-            If (kuidValue(3) And (1 << 0)) = 0 Then
+            If (kuidValue(3) And 1) = 0 Then
                 hash = hash Xor kuidValue(3)
             End If
         Catch ex As Exception
@@ -346,5 +329,63 @@ Public Class Kuid
     Public Function GetKuidReversedAsHexString() As String
         Return BitConverter.ToString(GetKuidReversedAsBytes()).Replace("-"c, " "c)
     End Function
+
+    ''' <summary>
+    ''' Debug kuid conversion at limits and overflow
+    ''' </summary>
+    Public Sub DebugKuid()
+        SetKuid("<kuid:16777400:123456>")
+        Debug.Assert(GetKuidAsHexString() = "B8 00 00 FF 40 E2 01 00", "Kuid conversion failed!")
+        Debug.Assert(GetUserID() = -16777032, "Kuid value failed!")
+        Debug.Assert(GetContentID() = 123456, "Kuid value failed!")
+        Debug.Assert(GetVersion() = 0, "Kuid value failed!")
+
+        SetKuidAsHexString("B8 00 00 FF 40 E2 01 00")
+        Debug.Assert(GetKuidAsString() = "<kuid:-16777032:123456>", "Kuid conversion failed!")
+
+        SetKuid("<kuid:-16777032:123456>")
+        Debug.Assert(GetKuidAsHexString() = "B8 00 00 FF 40 E2 01 00", "Kuid conversion failed!")
+
+        SetKuid("<kuid:-16777400:123456>")
+        Debug.Assert(GetKuidAsHexString() = "48 FF FF FE 40 E2 01 00", "Kuid conversion failed!")
+        Debug.Assert(GetUserID() = 16777032, "Kuid value failed!")
+        Debug.Assert(GetContentID() = 123456, "Kuid value failed!")
+        Debug.Assert(GetVersion() = 127, "Kuid value failed!")
+
+        SetKuidAsHexString("48 FF FF FE 40 E2 01 00")
+        Debug.Assert(GetKuidAsString() = "<kuid2:16777032:123456:127>", "Kuid conversion failed!")
+
+        SetKuid("<kuid2:16777032:123456:127>")
+        Debug.Assert(GetKuidAsHexString() = "48 FF FF FE 40 E2 01 00", "Kuid conversion failed!")
+
+        SetKuid("<kuid:-1:100503>")
+        Debug.Assert(GetKuidHash() = &H1E, "Kuid hashing failed!")
+        SetVersion(50)
+        Debug.Assert(GetVersion() = 0, "Kuid value failed!")
+
+        SetKuid("<kuid:-25:581>")
+        Debug.Assert(GetKuidHash() = &H5F, "Kuid hashing failed!")
+        Debug.Assert(GetUserID() = -25, "Kuid value failed!")
+        Debug.Assert(GetContentID() = 581, "Kuid value failed!")
+        Debug.Assert(GetVersion() = 0, "Kuid value failed!")
+
+        SetKuid("<kuid:276266:100101>")
+        Debug.Assert(GetKuidHash() = &H9A, "Kuid hashing failed!")
+
+        SetKuid("<kuid2:132952:131304:10>")
+        Debug.Assert(GetKuidHash() = &HB7, "Kuid hashing failed!")
+
+        SetKuid("<kuid2:16777032:123456:127>")
+        Debug.Assert(GetKuidHash() = &HEB, "Kuid hashing failed!")
+        Debug.Assert(GetVersion() = 127, "Kuid value failed!")
+
+        SetKuid("<kuid2:16777032:123456:13>")
+        Debug.Assert(GetKuidHash() = &HEB, "Kuid hashing failed!")
+        Debug.Assert(GetUserID() = 16777032, "Kuid value failed!")
+        Debug.Assert(GetContentID() = 123456, "Kuid value failed!")
+        Debug.Assert(GetVersion() = 13, "Kuid value failed!")
+
+        MsgBox("Kuid conversion verification completed!")
+    End Sub
 
 End Class
