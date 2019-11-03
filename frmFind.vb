@@ -4,7 +4,4 @@
         Close()
     End Sub
 
-    Private Sub txtFind_TextChanged(sender As Object, e As EventArgs) Handles txtFind.TextChanged
-
-    End Sub
 End Class
