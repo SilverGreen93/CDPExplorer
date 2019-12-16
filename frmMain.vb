@@ -45,6 +45,11 @@ Public Class frmMain
         gridKUIDs.Columns(7).ReadOnly = True
     End Sub
 
+    Sub ResizeGrid()
+        gridKUIDs.Width = Width - gridKUIDs.Left - 24
+        gridKUIDs.Height = Height - gridKUIDs.Top - StatusStrip.Height - 50
+    End Sub
+
     Sub SetTitle()
         Text = My.Application.Info.Title & " v" & My.Application.Info.Version.Major & "." & My.Application.Info.Version.Minor
         If fileName <> "" Then
@@ -120,6 +125,7 @@ Public Class frmMain
             lblCount.Text = totalAssets & " assets."
             kuidList = kuidList.Remove(kuidList.Length - 1) 'remove the trailing comma
             gridKUIDs.Rows.RemoveAt(0) 'remove the first row, it is empty
+            gridKUIDs.AutoResizeColumns()
 
             fileStr.Close()
 
@@ -439,8 +445,7 @@ Public Class frmMain
     Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         SetTitle()
         InitializeGrid()
-        gridKUIDs.Width = Width - gridKUIDs.Left - 24
-        gridKUIDs.Height = Height - gridKUIDs.Top - StatusStrip.Height - 50
+        resizeGrid()
         Dim files As String() = My.Application.CommandLineArgs.ToArray
         If files.Length > 0 Then
             fileName = files(0)
@@ -629,8 +634,7 @@ Public Class frmMain
     End Sub
 
     Private Sub frmMain_Resize(sender As Object, e As EventArgs) Handles Me.Resize
-        gridKUIDs.Width = Width - gridKUIDs.Left - 24
-        gridKUIDs.Height = Height - gridKUIDs.Top - StatusStrip.Height - 50
+        ResizeGrid()
     End Sub
 
     Private Sub ExitToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExitToolStripMenuItem.Click
@@ -700,4 +704,5 @@ Public Class frmMain
     Private Sub ExportAsCSVToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExportAsCSVToolStripMenuItem.Click
         ExportCSV()
     End Sub
+
 End Class

@@ -45,6 +45,7 @@ Partial Class frmMain
         Me.CopyAssetListToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripMenuItem2 = New System.Windows.Forms.ToolStripSeparator()
         Me.FindToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.FindNextToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.AssetToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.CopyKUIDToolStripMenuItem1 = New System.Windows.Forms.ToolStripMenuItem()
         Me.CopyAssetInfoToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -56,7 +57,6 @@ Partial Class frmMain
         Me.SaveFileDialog = New System.Windows.Forms.SaveFileDialog()
         Me.FolderBrowserDialog = New System.Windows.Forms.FolderBrowserDialog()
         Me.BackgroundWorker = New System.ComponentModel.BackgroundWorker()
-        Me.FindNextToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         CType(Me.gridKUIDs, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.ctxMenu.SuspendLayout()
         Me.StatusStrip.SuspendLayout()
@@ -68,7 +68,6 @@ Partial Class frmMain
         Me.gridKUIDs.AllowUserToAddRows = False
         Me.gridKUIDs.AllowUserToDeleteRows = False
         Me.gridKUIDs.AllowUserToResizeRows = False
-        Me.gridKUIDs.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.DisplayedCells
         Me.gridKUIDs.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.gridKUIDs.ContextMenuStrip = Me.ctxMenu
         Me.gridKUIDs.Location = New System.Drawing.Point(12, 39)
@@ -78,7 +77,7 @@ Partial Class frmMain
         Me.gridKUIDs.RowHeadersWidth = 51
         Me.gridKUIDs.RowTemplate.Height = 24
         Me.gridKUIDs.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
-        Me.gridKUIDs.Size = New System.Drawing.Size(1025, 564)
+        Me.gridKUIDs.Size = New System.Drawing.Size(1104, 564)
         Me.gridKUIDs.TabIndex = 26
         '
         'ctxMenu
@@ -122,7 +121,7 @@ Partial Class frmMain
         Me.StatusStrip.Location = New System.Drawing.Point(0, 616)
         Me.StatusStrip.Name = "StatusStrip"
         Me.StatusStrip.Padding = New System.Windows.Forms.Padding(1, 0, 13, 0)
-        Me.StatusStrip.Size = New System.Drawing.Size(1049, 26)
+        Me.StatusStrip.Size = New System.Drawing.Size(1128, 26)
         Me.StatusStrip.TabIndex = 31
         Me.StatusStrip.Text = "StatusStrip"
         '
@@ -144,7 +143,7 @@ Partial Class frmMain
         Me.MenuStrip.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.FIleToolStripMenuItem, Me.EditToolStripMenuItem, Me.AssetToolStripMenuItem, Me.HelpToolStripMenuItem})
         Me.MenuStrip.Location = New System.Drawing.Point(0, 0)
         Me.MenuStrip.Name = "MenuStrip"
-        Me.MenuStrip.Size = New System.Drawing.Size(1049, 28)
+        Me.MenuStrip.Size = New System.Drawing.Size(1128, 28)
         Me.MenuStrip.TabIndex = 32
         Me.MenuStrip.Text = "MenuStrip1"
         '
@@ -216,6 +215,13 @@ Partial Class frmMain
         Me.FindToolStripMenuItem.Size = New System.Drawing.Size(281, 26)
         Me.FindToolStripMenuItem.Text = "Find..."
         '
+        'FindNextToolStripMenuItem
+        '
+        Me.FindNextToolStripMenuItem.Name = "FindNextToolStripMenuItem"
+        Me.FindNextToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3
+        Me.FindNextToolStripMenuItem.Size = New System.Drawing.Size(281, 26)
+        Me.FindNextToolStripMenuItem.Text = "Find next"
+        '
         'AssetToolStripMenuItem
         '
         Me.AssetToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CopyKUIDToolStripMenuItem1, Me.CopyAssetInfoToolStripMenuItem, Me.ToolStripMenuItem3, Me.ExtractAsCDPToolStripMenuItem, Me.ExtractAllAsCDPToolStripMenuItem})
@@ -268,7 +274,7 @@ Partial Class frmMain
         '
         Me.AboutToolStripMenuItem.Name = "AboutToolStripMenuItem"
         Me.AboutToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1
-        Me.AboutToolStripMenuItem.Size = New System.Drawing.Size(224, 26)
+        Me.AboutToolStripMenuItem.Size = New System.Drawing.Size(166, 26)
         Me.AboutToolStripMenuItem.Text = "About..."
         '
         'BackgroundWorker
@@ -276,19 +282,12 @@ Partial Class frmMain
         Me.BackgroundWorker.WorkerReportsProgress = True
         Me.BackgroundWorker.WorkerSupportsCancellation = True
         '
-        'FindNextToolStripMenuItem
-        '
-        Me.FindNextToolStripMenuItem.Name = "FindNextToolStripMenuItem"
-        Me.FindNextToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3
-        Me.FindNextToolStripMenuItem.Size = New System.Drawing.Size(281, 26)
-        Me.FindNextToolStripMenuItem.Text = "Find next"
-        '
         'frmMain
         '
         Me.AllowDrop = True
         Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(1049, 642)
+        Me.ClientSize = New System.Drawing.Size(1128, 642)
         Me.Controls.Add(Me.StatusStrip)
         Me.Controls.Add(Me.MenuStrip)
         Me.Controls.Add(Me.gridKUIDs)
