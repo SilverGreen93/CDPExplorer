@@ -143,7 +143,7 @@ Partial Class frmMain
         Me.MenuStrip.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.FIleToolStripMenuItem, Me.EditToolStripMenuItem, Me.AssetToolStripMenuItem, Me.HelpToolStripMenuItem})
         Me.MenuStrip.Location = New System.Drawing.Point(0, 0)
         Me.MenuStrip.Name = "MenuStrip"
-        Me.MenuStrip.Size = New System.Drawing.Size(1128, 28)
+        Me.MenuStrip.Size = New System.Drawing.Size(1128, 30)
         Me.MenuStrip.TabIndex = 32
         Me.MenuStrip.Text = "MenuStrip1"
         '
@@ -151,8 +151,8 @@ Partial Class frmMain
         '
         Me.FIleToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.OpenCDPToolStripMenuItem, Me.ExportAsCSVToolStripMenuItem, Me.ToolStripMenuItem1, Me.ExitToolStripMenuItem})
         Me.FIleToolStripMenuItem.Name = "FIleToolStripMenuItem"
-        Me.FIleToolStripMenuItem.Size = New System.Drawing.Size(46, 24)
-        Me.FIleToolStripMenuItem.Text = "FIle"
+        Me.FIleToolStripMenuItem.Size = New System.Drawing.Size(46, 26)
+        Me.FIleToolStripMenuItem.Text = "File"
         '
         'OpenCDPToolStripMenuItem
         '
@@ -184,7 +184,7 @@ Partial Class frmMain
         '
         Me.EditToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CopyKUIDListToolStripMenuItem, Me.CopyAssetListToolStripMenuItem, Me.ToolStripMenuItem2, Me.FindToolStripMenuItem, Me.FindNextToolStripMenuItem})
         Me.EditToolStripMenuItem.Name = "EditToolStripMenuItem"
-        Me.EditToolStripMenuItem.Size = New System.Drawing.Size(49, 24)
+        Me.EditToolStripMenuItem.Size = New System.Drawing.Size(49, 26)
         Me.EditToolStripMenuItem.Text = "Edit"
         '
         'CopyKUIDListToolStripMenuItem
@@ -226,7 +226,7 @@ Partial Class frmMain
         '
         Me.AssetToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CopyKUIDToolStripMenuItem1, Me.CopyAssetInfoToolStripMenuItem, Me.ToolStripMenuItem3, Me.ExtractAsCDPToolStripMenuItem, Me.ExtractAllAsCDPToolStripMenuItem})
         Me.AssetToolStripMenuItem.Name = "AssetToolStripMenuItem"
-        Me.AssetToolStripMenuItem.Size = New System.Drawing.Size(58, 24)
+        Me.AssetToolStripMenuItem.Size = New System.Drawing.Size(58, 26)
         Me.AssetToolStripMenuItem.Text = "Asset"
         '
         'CopyKUIDToolStripMenuItem1
@@ -267,7 +267,7 @@ Partial Class frmMain
         '
         Me.HelpToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.AboutToolStripMenuItem})
         Me.HelpToolStripMenuItem.Name = "HelpToolStripMenuItem"
-        Me.HelpToolStripMenuItem.Size = New System.Drawing.Size(55, 24)
+        Me.HelpToolStripMenuItem.Size = New System.Drawing.Size(55, 26)
         Me.HelpToolStripMenuItem.Text = "Help"
         '
         'AboutToolStripMenuItem
