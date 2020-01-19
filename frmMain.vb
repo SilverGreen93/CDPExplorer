@@ -190,10 +190,10 @@ Public Class frmMain
                 End If
 
             Case 3 'string
-                If tagLength - tagNameSize - 3 > 0 Then 'otherwise it is a null string (not even a character)
+                If tagLength - tagNameSize - 3 >= 0 Then 'otherwise it is a null string (not even a character)
                     Dim tagString As String
 
-                    tagString = System.Text.Encoding.UTF8.GetString(FileStr.ReadBytes(tagLength - tagNameSize - 3))
+                    tagString = System.Text.Encoding.UTF8.GetString(FileStr.ReadBytes(tagLength - tagNameSize - 3)) 'read without the null terminator
                     FileStr.ReadByte() 'null terminator
 
                     If tagName = "username" Then
@@ -218,8 +218,8 @@ Public Class frmMain
                             currentAsset.AssetKuid.SetKuid("<kuid2:" & tagString & ">")
                         End If
                     ElseIf tagName = "asset-filename" Then
-                            'For legacy assets which do not have username
-                            If currentAsset.Username = "Untitled" Then
+                        'For legacy assets which do not have username
+                        If currentAsset.Username = "Untitled" Then
                             currentAsset.Username = tagString
                         End If
                     End If
