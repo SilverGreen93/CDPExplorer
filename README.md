@@ -1,4 +1,4 @@
-# CDP Explorer v3.0
+# CDP Explorer
 
 Utility aplication for browsing, searching and extracting Trainz Assets from CDP files.
 
