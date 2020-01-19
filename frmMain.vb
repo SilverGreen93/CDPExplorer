@@ -179,15 +179,21 @@ Public Class frmMain
                 End If
 
             Case 2 'float
+                Dim s_index As Integer = 0
+
                 If tagName = "trainz-build" Then
                     currentAsset.SetTrainzBuild(FileStr.ReadSingle())
-                Else
-                    'Just skip
-                    'parse each float value if more than 1
-                    For i As Integer = 0 To tagLength - tagNameSize - 3 Step 4
-                        FileStr.ReadSingle()
-                    Next
+                    s_index = 4
+                    'we already read the first float,
+                    'but there are cases when the float is badly written as 2,4 instead of 2.4
+                    'and this will be translated to a list of 2 floats: 2.0,4.0. So read the whole list.
                 End If
+
+                'Just skip
+                'parse each float value if more than 1
+                For i As Integer = s_index To tagLength - tagNameSize - 3 Step 4
+                    FileStr.ReadSingle()
+                Next
 
             Case 3 'string
                 If tagLength - tagNameSize - 3 >= 0 Then 'otherwise it is a null string (not even a character)
