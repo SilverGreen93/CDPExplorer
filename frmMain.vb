@@ -130,7 +130,7 @@ Public Class frmMain
             fileStr.Close()
 
         Catch ex As Exception
-            MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show(ex.Message & vbCrLf & "KUID: " & currentAsset.AssetKuid.GetKuidAsString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
 
     End Sub
@@ -333,7 +333,7 @@ Public Class frmMain
             File.WriteAllBytes(exportPath & "\" & assetKuid.GetKuidAsString().Replace("<", "").Replace(":", " ").Replace(">", "") & ".cdp", bytesCopied)
 
         Catch ex As Exception
-            MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show(ex.Message & vbCrLf & "KUID: " & assetKuid.GetKuidAsString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
 
         'free memory and reset array
