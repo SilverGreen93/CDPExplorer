@@ -22,12 +22,14 @@ Partial Class frmFind
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmFind))
         Me.btnFind = New System.Windows.Forms.Button()
         Me.txtFind = New System.Windows.Forms.TextBox()
         Me.SuspendLayout()
         '
         'btnFind
         '
+        Me.btnFind.DialogResult = System.Windows.Forms.DialogResult.OK
         Me.btnFind.Location = New System.Drawing.Point(248, 9)
         Me.btnFind.Margin = New System.Windows.Forms.Padding(3, 2, 3, 2)
         Me.btnFind.Name = "btnFind"
@@ -53,7 +55,9 @@ Partial Class frmFind
         Me.Controls.Add(Me.btnFind)
         Me.Controls.Add(Me.txtFind)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "frmFind"
+        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "Find"
         Me.ResumeLayout(False)
         Me.PerformLayout()

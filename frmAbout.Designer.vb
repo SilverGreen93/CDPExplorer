@@ -41,9 +41,10 @@ Partial Class frmAbout
         '
         Me.lblTitle.AutoSize = True
         Me.lblTitle.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(204, Byte))
-        Me.lblTitle.Location = New System.Drawing.Point(55, 19)
+        Me.lblTitle.Location = New System.Drawing.Point(73, 23)
+        Me.lblTitle.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.lblTitle.Name = "lblTitle"
-        Me.lblTitle.Size = New System.Drawing.Size(74, 20)
+        Me.lblTitle.Size = New System.Drawing.Size(88, 25)
         Me.lblTitle.TabIndex = 0
         Me.lblTitle.Text = "app title"
         '
@@ -51,10 +52,9 @@ Partial Class frmAbout
         '
         Me.WebLink.AutoSize = True
         Me.WebLink.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(204, Byte))
-        Me.WebLink.Location = New System.Drawing.Point(56, 102)
-        Me.WebLink.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.WebLink.Location = New System.Drawing.Point(75, 126)
         Me.WebLink.Name = "WebLink"
-        Me.WebLink.Size = New System.Drawing.Size(240, 16)
+        Me.WebLink.Size = New System.Drawing.Size(300, 20)
         Me.WebLink.TabIndex = 20
         Me.WebLink.TabStop = True
         Me.WebLink.Text = "https://www.tapatalk.com/groups/vvmm"
@@ -63,10 +63,9 @@ Partial Class frmAbout
         '
         Me.Label2.AutoSize = True
         Me.Label2.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(204, Byte))
-        Me.Label2.Location = New System.Drawing.Point(56, 48)
-        Me.Label2.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.Label2.Location = New System.Drawing.Point(75, 59)
         Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(137, 16)
+        Me.Label2.Size = New System.Drawing.Size(174, 20)
         Me.Label2.TabIndex = 19
         Me.Label2.Text = "Author: SilverGreen93"
         '
@@ -74,10 +73,9 @@ Partial Class frmAbout
         '
         Me.Label3.AutoSize = True
         Me.Label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(204, Byte))
-        Me.Label3.Location = New System.Drawing.Point(56, 86)
-        Me.Label3.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.Label3.Location = New System.Drawing.Point(75, 106)
         Me.Label3.Name = "Label3"
-        Me.Label3.Size = New System.Drawing.Size(208, 16)
+        Me.Label3.Size = New System.Drawing.Size(266, 20)
         Me.Label3.TabIndex = 21
         Me.Label3.Text = "For support and discussions visit: "
         '
@@ -85,10 +83,9 @@ Partial Class frmAbout
         '
         Me.Label4.AutoSize = True
         Me.Label4.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(204, Byte))
-        Me.Label4.Location = New System.Drawing.Point(56, 64)
-        Me.Label4.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.Label4.Location = New System.Drawing.Point(75, 79)
         Me.Label4.Name = "Label4"
-        Me.Label4.Size = New System.Drawing.Size(203, 16)
+        Me.Label4.Size = New System.Drawing.Size(260, 20)
         Me.Label4.TabIndex = 22
         Me.Label4.Text = "Trainz username: vvmm (474195)"
         '
@@ -96,19 +93,19 @@ Partial Class frmAbout
         '
         Me.Label5.AutoSize = True
         Me.Label5.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(204, Byte))
-        Me.Label5.Location = New System.Drawing.Point(56, 202)
-        Me.Label5.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.Label5.Location = New System.Drawing.Point(75, 249)
         Me.Label5.Name = "Label5"
-        Me.Label5.Size = New System.Drawing.Size(146, 16)
+        Me.Label5.Size = New System.Drawing.Size(189, 20)
         Me.Label5.TabIndex = 23
-        Me.Label5.Text = "Copyright (c) 2017-2019"
+        Me.Label5.Text = "Copyright (c) 2017-2020"
         '
         'PictureBox1
         '
         Me.PictureBox1.Image = CType(resources.GetObject("PictureBox1.Image"), System.Drawing.Image)
-        Me.PictureBox1.Location = New System.Drawing.Point(12, 12)
+        Me.PictureBox1.Location = New System.Drawing.Point(16, 15)
+        Me.PictureBox1.Margin = New System.Windows.Forms.Padding(4)
         Me.PictureBox1.Name = "PictureBox1"
-        Me.PictureBox1.Size = New System.Drawing.Size(38, 38)
+        Me.PictureBox1.Size = New System.Drawing.Size(51, 47)
         Me.PictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage
         Me.PictureBox1.TabIndex = 26
         Me.PictureBox1.TabStop = False
@@ -116,9 +113,10 @@ Partial Class frmAbout
         'btnClose
         '
         Me.btnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.btnClose.Location = New System.Drawing.Point(112, 225)
+        Me.btnClose.Location = New System.Drawing.Point(149, 277)
+        Me.btnClose.Margin = New System.Windows.Forms.Padding(4)
         Me.btnClose.Name = "btnClose"
-        Me.btnClose.Size = New System.Drawing.Size(117, 36)
+        Me.btnClose.Size = New System.Drawing.Size(156, 44)
         Me.btnClose.TabIndex = 27
         Me.btnClose.Text = "Close"
         Me.btnClose.UseVisualStyleBackColor = True
@@ -127,10 +125,9 @@ Partial Class frmAbout
         '
         Me.Label1.AutoSize = True
         Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(204, Byte))
-        Me.Label1.Location = New System.Drawing.Point(56, 128)
-        Me.Label1.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.Label1.Location = New System.Drawing.Point(75, 158)
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(213, 16)
+        Me.Label1.Size = New System.Drawing.Size(267, 20)
         Me.Label1.TabIndex = 29
         Me.Label1.Text = "For updates and source code visit:"
         '
@@ -138,10 +135,9 @@ Partial Class frmAbout
         '
         Me.LinkLabel1.AutoSize = True
         Me.LinkLabel1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(204, Byte))
-        Me.LinkLabel1.Location = New System.Drawing.Point(56, 144)
-        Me.LinkLabel1.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.LinkLabel1.Location = New System.Drawing.Point(75, 177)
         Me.LinkLabel1.Name = "LinkLabel1"
-        Me.LinkLabel1.Size = New System.Drawing.Size(283, 16)
+        Me.LinkLabel1.Size = New System.Drawing.Size(356, 20)
         Me.LinkLabel1.TabIndex = 28
         Me.LinkLabel1.TabStop = True
         Me.LinkLabel1.Text = "https://github.com/SilverGreen93/CDPExplorer"
@@ -149,19 +145,18 @@ Partial Class frmAbout
         'Label6
         '
         Me.Label6.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(204, Byte))
-        Me.Label6.Location = New System.Drawing.Point(56, 165)
-        Me.Label6.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.Label6.Location = New System.Drawing.Point(75, 203)
         Me.Label6.Name = "Label6"
-        Me.Label6.Size = New System.Drawing.Size(275, 32)
+        Me.Label6.Size = New System.Drawing.Size(367, 39)
         Me.Label6.TabIndex = 30
         Me.Label6.Text = "This is freeware, open-source software distributed under the MIT license."
         '
         'frmAbout
         '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.btnClose
-        Me.ClientSize = New System.Drawing.Size(342, 273)
+        Me.ClientSize = New System.Drawing.Size(456, 336)
         Me.Controls.Add(Me.Label6)
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.LinkLabel1)
@@ -174,7 +169,9 @@ Partial Class frmAbout
         Me.Controls.Add(Me.Label2)
         Me.Controls.Add(Me.lblTitle)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow
+        Me.Margin = New System.Windows.Forms.Padding(4)
         Me.Name = "frmAbout"
+        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "frmAbout"
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)

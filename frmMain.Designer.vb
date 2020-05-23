@@ -46,6 +46,8 @@ Partial Class frmMain
         Me.ToolStripMenuItem2 = New System.Windows.Forms.ToolStripSeparator()
         Me.FindToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.FindNextToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripMenuItem4 = New System.Windows.Forms.ToolStripSeparator()
+        Me.SettingsToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.AssetToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.CopyKUIDToolStripMenuItem1 = New System.Windows.Forms.ToolStripMenuItem()
         Me.CopyAssetInfoToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -143,7 +145,7 @@ Partial Class frmMain
         Me.MenuStrip.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.FIleToolStripMenuItem, Me.EditToolStripMenuItem, Me.AssetToolStripMenuItem, Me.HelpToolStripMenuItem})
         Me.MenuStrip.Location = New System.Drawing.Point(0, 0)
         Me.MenuStrip.Name = "MenuStrip"
-        Me.MenuStrip.Size = New System.Drawing.Size(1128, 30)
+        Me.MenuStrip.Size = New System.Drawing.Size(1128, 28)
         Me.MenuStrip.TabIndex = 32
         Me.MenuStrip.Text = "MenuStrip1"
         '
@@ -151,7 +153,7 @@ Partial Class frmMain
         '
         Me.FIleToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.OpenCDPToolStripMenuItem, Me.ExportAsCSVToolStripMenuItem, Me.ToolStripMenuItem1, Me.ExitToolStripMenuItem})
         Me.FIleToolStripMenuItem.Name = "FIleToolStripMenuItem"
-        Me.FIleToolStripMenuItem.Size = New System.Drawing.Size(46, 26)
+        Me.FIleToolStripMenuItem.Size = New System.Drawing.Size(46, 24)
         Me.FIleToolStripMenuItem.Text = "File"
         '
         'OpenCDPToolStripMenuItem
@@ -182,9 +184,9 @@ Partial Class frmMain
         '
         'EditToolStripMenuItem
         '
-        Me.EditToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CopyKUIDListToolStripMenuItem, Me.CopyAssetListToolStripMenuItem, Me.ToolStripMenuItem2, Me.FindToolStripMenuItem, Me.FindNextToolStripMenuItem})
+        Me.EditToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CopyKUIDListToolStripMenuItem, Me.CopyAssetListToolStripMenuItem, Me.ToolStripMenuItem2, Me.FindToolStripMenuItem, Me.FindNextToolStripMenuItem, Me.ToolStripMenuItem4, Me.SettingsToolStripMenuItem})
         Me.EditToolStripMenuItem.Name = "EditToolStripMenuItem"
-        Me.EditToolStripMenuItem.Size = New System.Drawing.Size(49, 26)
+        Me.EditToolStripMenuItem.Size = New System.Drawing.Size(49, 24)
         Me.EditToolStripMenuItem.Text = "Edit"
         '
         'CopyKUIDListToolStripMenuItem
@@ -222,11 +224,23 @@ Partial Class frmMain
         Me.FindNextToolStripMenuItem.Size = New System.Drawing.Size(281, 26)
         Me.FindNextToolStripMenuItem.Text = "Find next"
         '
+        'ToolStripMenuItem4
+        '
+        Me.ToolStripMenuItem4.Name = "ToolStripMenuItem4"
+        Me.ToolStripMenuItem4.Size = New System.Drawing.Size(278, 6)
+        '
+        'SettingsToolStripMenuItem
+        '
+        Me.SettingsToolStripMenuItem.Name = "SettingsToolStripMenuItem"
+        Me.SettingsToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F12
+        Me.SettingsToolStripMenuItem.Size = New System.Drawing.Size(281, 26)
+        Me.SettingsToolStripMenuItem.Text = "Settings..."
+        '
         'AssetToolStripMenuItem
         '
         Me.AssetToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CopyKUIDToolStripMenuItem1, Me.CopyAssetInfoToolStripMenuItem, Me.ToolStripMenuItem3, Me.ExtractAsCDPToolStripMenuItem, Me.ExtractAllAsCDPToolStripMenuItem})
         Me.AssetToolStripMenuItem.Name = "AssetToolStripMenuItem"
-        Me.AssetToolStripMenuItem.Size = New System.Drawing.Size(58, 26)
+        Me.AssetToolStripMenuItem.Size = New System.Drawing.Size(58, 24)
         Me.AssetToolStripMenuItem.Text = "Asset"
         '
         'CopyKUIDToolStripMenuItem1
@@ -267,7 +281,7 @@ Partial Class frmMain
         '
         Me.HelpToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.AboutToolStripMenuItem})
         Me.HelpToolStripMenuItem.Name = "HelpToolStripMenuItem"
-        Me.HelpToolStripMenuItem.Size = New System.Drawing.Size(55, 26)
+        Me.HelpToolStripMenuItem.Size = New System.Drawing.Size(55, 24)
         Me.HelpToolStripMenuItem.Text = "Help"
         '
         'AboutToolStripMenuItem
@@ -339,4 +353,6 @@ Partial Class frmMain
     Friend WithEvents CopyKUIDToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents CopyKUIDToolStripMenuItem1 As ToolStripMenuItem
     Friend WithEvents FindNextToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents ToolStripMenuItem4 As ToolStripSeparator
+    Friend WithEvents SettingsToolStripMenuItem As ToolStripMenuItem
 End Class

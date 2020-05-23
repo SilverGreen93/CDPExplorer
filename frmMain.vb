@@ -1,5 +1,6 @@
 ﻿Imports System.ComponentModel
 Imports System.IO
+Imports System.Text.RegularExpressions
 
 Public Class frmMain
 
@@ -11,6 +12,20 @@ Public Class frmMain
     Dim bytesCopied(15) As Byte 'for extracting assets from cdp
     Dim currentAsset As Asset
     Public findString As String
+
+    Public Enum NameFormat
+        NAME_KUID
+        NAME_BUILD_KUID
+        NAME_USERNAME_KUID
+        NAME_USERNAME
+        NAME_BUILD_USERNAME
+        NAME_BUILD_USERNAME_KUID
+    End Enum
+
+    Public Enum SavePolicy
+        SAVE_OVERWRITE
+        SAVE_SKIP
+    End Enum
 
     Enum ProcessingType
         EXTRACT_ALL
@@ -56,6 +71,30 @@ Public Class frmMain
             Text &= " - " & fileName
         End If
     End Sub
+
+    Function RemoveIllegalFileNameChars(input As String, Optional replacement As String = " ") As String
+        Dim regexSearch = New String(Path.GetInvalidFileNameChars()) & New String(Path.GetInvalidPathChars())
+        Dim r = New Regex(String.Format("[{0}]", Regex.Escape(regexSearch)))
+        Return r.Replace(input, replacement).Trim()
+    End Function
+
+    Function FormatPath(basePath As String, grdRow As DataGridViewRow) As String
+        Select Case My.Settings.fileNameFormat
+            Case NameFormat.NAME_KUID
+                Return basePath & "\" & RemoveIllegalFileNameChars(grdRow.Cells(0).Value.ToString) & ".cdp"
+            Case NameFormat.NAME_BUILD_KUID
+                Return basePath & "\" & RemoveIllegalFileNameChars(grdRow.Cells(4).Value.ToString & grdRow.Cells(0).Value.ToString) & ".cdp"
+            Case NameFormat.NAME_USERNAME_KUID
+                Return basePath & "\" & RemoveIllegalFileNameChars(grdRow.Cells(1).Value.ToString & grdRow.Cells(0).Value.ToString) & ".cdp"
+            Case NameFormat.NAME_USERNAME
+                Return basePath & "\" & RemoveIllegalFileNameChars(grdRow.Cells(1).Value.ToString) & ".cdp"
+            Case NameFormat.NAME_BUILD_USERNAME
+                Return basePath & "\" & RemoveIllegalFileNameChars(grdRow.Cells(4).Value.ToString & " " & grdRow.Cells(1).Value.ToString) & ".cdp"
+            Case NameFormat.NAME_BUILD_USERNAME_KUID
+                Return basePath & "\" & RemoveIllegalFileNameChars(grdRow.Cells(4).Value.ToString & " " & grdRow.Cells(1).Value.ToString & grdRow.Cells(0).Value.ToString) & ".cdp"
+        End Select
+    End Function
+
 
     ''' <summary>
     ''' Compare two Byte arrays
@@ -260,7 +299,7 @@ Public Class frmMain
                                             currentAsset.Username,
                                             currentAsset.Kind,
                                             currentAsset.CategoryClass,
-                                            currentAsset.TrainzBuild,
+                                            currentAsset.GetTrainzBuildAsString(),
                                             currentAsset.CategoryRegion,
                                             currentAsset.CategoryEra,
                                             currentAsset.Description})
@@ -336,7 +375,13 @@ Public Class frmMain
             Array.Copy(BitConverter.GetBytes(bytesCopied.Length - &H10), 0, bytesCopied, &HC, 4)
 
             'write the file to disk
-            File.WriteAllBytes(exportPath & "\" & assetKuid.GetKuidAsString().Replace("<", "").Replace(":", " ").Replace(">", "") & ".cdp", bytesCopied)
+            If My.Settings.fileSavePolicy = SavePolicy.SAVE_OVERWRITE Then
+                File.WriteAllBytes(exportPath, bytesCopied)
+            ElseIf My.Settings.fileSavePolicy = SavePolicy.SAVE_SKIP Then
+                If Not My.Computer.FileSystem.FileExists(exportPath) Then
+                    File.WriteAllBytes(exportPath, bytesCopied)
+                End If
+            End If
 
         Catch ex As Exception
             MessageBox.Show(ex.Message & vbCrLf & "KUID: " & assetKuid.GetKuidAsString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -457,7 +502,8 @@ Public Class frmMain
     Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         SetTitle()
         InitializeGrid()
-        resizeGrid()
+        ResizeGrid()
+
         Dim files As String() = My.Application.CommandLineArgs.ToArray
         If files.Length > 0 Then
             fileName = files(0)
@@ -507,8 +553,8 @@ Public Class frmMain
         Dim found As Boolean = False
         findString = str
 
-        If findString = "" Then
-            frmFind.Show()
+        If findString = "" AndAlso frmFind.Visible = False Then
+            frmFind.ShowDialog(Me)
             Exit Sub
         End If
 
@@ -552,31 +598,31 @@ Public Class frmMain
     Private Sub ExtractAsCDPToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExtractAsCDPToolStripMenuItem.Click
         If FolderBrowserDialog.ShowDialog() <> vbOK Then Exit Sub
         BackgroundWorker.RunWorkerAsync(ProcessingType.EXTRACT_SELECTED)
-        frmProgress.ShowDialog()
+        frmProgress.ShowDialog(Me)
     End Sub
 
     Private Sub ExtractAllAsCDPToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExtractAllAsCDPToolStripMenuItem.Click
         If FolderBrowserDialog.ShowDialog() <> vbOK Then Exit Sub
         BackgroundWorker.RunWorkerAsync(ProcessingType.EXTRACT_ALL)
-        frmProgress.ShowDialog()
+        frmProgress.ShowDialog(Me)
     End Sub
 
     Private Sub AboutToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles AboutToolStripMenuItem.Click
-        frmAbout.ShowDialog()
+        frmAbout.ShowDialog(Me)
     End Sub
 
-    Private Sub BackgroundWorker_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs) Handles BackgroundWorker.DoWork
+    Private Sub BackgroundWorker_DoWork(sender As Object, e As DoWorkEventArgs) Handles BackgroundWorker.DoWork
         Dim extractionMethod As ProcessingType = e.Argument
 
         If extractionMethod = ProcessingType.EXTRACT_ALL Then
             For row As Integer = 0 To gridKUIDs.Rows.Count - 1
-                ExtractContent(New Kuid(gridKUIDs.Rows(row).Cells(0).Value.ToString), FolderBrowserDialog.SelectedPath)
+                ExtractContent(New Kuid(gridKUIDs.Rows(row).Cells(0).Value.ToString), FormatPath(FolderBrowserDialog.SelectedPath, gridKUIDs.Rows(row)))
                 BackgroundWorker.ReportProgress(row / gridKUIDs.Rows.Count * 100)
                 If BackgroundWorker.CancellationPending Then Exit For
             Next
         ElseIf extractionMethod = ProcessingType.EXTRACT_SELECTED Then
             For row As Integer = 0 To gridKUIDs.SelectedRows.Count - 1
-                ExtractContent(New Kuid(gridKUIDs.SelectedRows(row).Cells(0).Value.ToString), FolderBrowserDialog.SelectedPath)
+                ExtractContent(New Kuid(gridKUIDs.SelectedRows(row).Cells(0).Value.ToString), FormatPath(FolderBrowserDialog.SelectedPath, gridKUIDs.SelectedRows(row)))
                 BackgroundWorker.ReportProgress(row / gridKUIDs.SelectedRows.Count * 100)
                 If BackgroundWorker.CancellationPending Then Exit For
             Next
@@ -627,7 +673,7 @@ Public Class frmMain
     Private Sub ExtractSelectedAsCDPToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExtractSelectedAsCDPToolStripMenuItem.Click
         If FolderBrowserDialog.ShowDialog() <> vbOK Then Exit Sub
         BackgroundWorker.RunWorkerAsync(ProcessingType.EXTRACT_SELECTED)
-        frmProgress.ShowDialog()
+        frmProgress.ShowDialog(Me)
     End Sub
 
     Private Sub OpenCDPToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OpenCDPToolStripMenuItem.Click
@@ -654,7 +700,7 @@ Public Class frmMain
     End Sub
 
     Private Sub FindToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles FindToolStripMenuItem.Click
-        frmFind.Show()
+        frmFind.Show(Me)
     End Sub
 
     Private Sub FindNextToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles FindNextToolStripMenuItem.Click
@@ -715,6 +761,10 @@ Public Class frmMain
 
     Private Sub ExportAsCSVToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExportAsCSVToolStripMenuItem.Click
         ExportCSV()
+    End Sub
+
+    Private Sub SettingsToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles SettingsToolStripMenuItem.Click
+        frmSettings.ShowDialog(Me)
     End Sub
 
 End Class
