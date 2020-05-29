@@ -93,13 +93,35 @@ Public Class Kuid
 
         kuidParts = Text.RegularExpressions.Regex.Split(kuid, ":")
 
-        If kuidParts.Length < 3 Then 'kuid too short
-            Return False
-        End If
+        'kuid does not start with "kuid"
+        If kuidParts(0).IndexOf("kuid", StringComparison.OrdinalIgnoreCase) = -1 Then
 
-        SetUserID(Val(kuidParts(1)))
-        SetContentID(Val(kuidParts(2)))
-        If kuidParts.Length > 3 Then SetVersion(Val(kuidParts(3)))
+            'In some cases we can have a kuid without the "kuid" keyword
+            '1234:12345
+            If kuidParts.Length < 2 Then Return False 'kuid too short
+
+            SetUserID(Val(kuidParts(0)))
+            SetContentID(Val(kuidParts(1)))
+
+            If kuidParts.Length > 2 Then SetVersion(Val(kuidParts(2)))
+
+        Else
+            'kuid starts with "kuid"
+
+            If kuidParts.Length < 3 Then Return False 'kuid too short
+
+            SetUserID(Val(kuidParts(1)))
+            SetContentID(Val(kuidParts(2)))
+
+            If kuidParts.Length = 3 AndAlso kuidParts(0).IndexOf("kuid2", StringComparison.OrdinalIgnoreCase) <> -1 Then
+                'In some cases we can have kuid2 with missing version number. In that case version is always 127
+                '<kuid2:146087:27023>
+                SetVersion(127)
+            ElseIf kuidParts.Length > 3 Then
+                SetVersion(Val(kuidParts(3)))
+            End If
+
+        End If
 
         Return True
     End Function

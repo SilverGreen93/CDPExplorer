@@ -93,6 +93,8 @@ Public Class frmMain
             Case NameFormat.NAME_BUILD_USERNAME_KUID
                 Return basePath & "\" & RemoveIllegalFileNameChars(grdRow.Cells(4).Value.ToString & " " & grdRow.Cells(1).Value.ToString & grdRow.Cells(0).Value.ToString) & ".cdp"
         End Select
+
+        Return ""
     End Function
 
 
@@ -254,17 +256,11 @@ Public Class frmMain
                     ElseIf tagName = "description" Then
                         currentAsset.Description = tagString
                     ElseIf tagName = "kuid" Then
-                        'For some legacy assets the kuid can be stored as string in 2 different formats
-                        If (tagString.IndexOf("kuid", StringComparison.OrdinalIgnoreCase) <> -1) Then
-                            'case <KUID2:1234:12345:03>
-                            currentAsset.AssetKuid.SetKuid(tagString)
-                        Else
-                            'case 1234:12345
-                            currentAsset.AssetKuid.SetKuid("<kuid2:" & tagString & ">")
-                        End If
-                    ElseIf tagName = "asset-filename" Then
-                        'For legacy assets which do not have username
-                        If currentAsset.Username = "Untitled" Then
+                        'For some legacy assets the kuid can be stored as string
+                        currentAsset.AssetKuid.SetKuid(tagString)
+                        ElseIf tagName = "asset-filename" Then
+                            'For legacy assets which do not have username
+                            If currentAsset.Username = "Untitled" Then
                             currentAsset.Username = tagString
                         End If
                     End If
