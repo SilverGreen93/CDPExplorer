@@ -30,7 +30,7 @@
     End Sub
 
     Public Function GetTrainzBuildAsString() As String
-        Return TrainzBuild.ToString("G", Globalization.CultureInfo.InvariantCulture)
+        Return TrainzBuild.ToString("N1", Globalization.CultureInfo.InvariantCulture)
     End Function
 
     Public Function GetTrainzBuild() As Single
