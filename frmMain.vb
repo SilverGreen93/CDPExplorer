@@ -211,6 +211,9 @@ Public Class frmMain
                     'Copy only last 4 bytes. The first 4 are -1
                     currentAsset.AssetKuid.SetUserID(-1)
                     currentAsset.AssetKuid.SetContentID(FileStr.ReadInt32())
+                ElseIf tagName = "trainz-build" Then
+                    'There are some cases when trainz-build is stored as int instead of float.
+                    currentAsset.SetTrainzBuild(FileStr.ReadInt32())
                 Else
                     'Just skip
                     'parse each int value if more than 1
