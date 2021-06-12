@@ -28,7 +28,7 @@ Partial Class frmAbout
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label3 = New System.Windows.Forms.Label()
         Me.Label4 = New System.Windows.Forms.Label()
-        Me.Label5 = New System.Windows.Forms.Label()
+        Me.lblCopyright = New System.Windows.Forms.Label()
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
         Me.btnClose = New System.Windows.Forms.Button()
         Me.Label1 = New System.Windows.Forms.Label()
@@ -89,15 +89,15 @@ Partial Class frmAbout
         Me.Label4.TabIndex = 22
         Me.Label4.Text = "Trainz username: vvmm (474195)"
         '
-        'Label5
+        'lblCopyright
         '
-        Me.Label5.AutoSize = True
-        Me.Label5.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(204, Byte))
-        Me.Label5.Location = New System.Drawing.Point(75, 249)
-        Me.Label5.Name = "Label5"
-        Me.Label5.Size = New System.Drawing.Size(189, 20)
-        Me.Label5.TabIndex = 23
-        Me.Label5.Text = "Copyright (c) 2017-2020"
+        Me.lblCopyright.AutoSize = True
+        Me.lblCopyright.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(204, Byte))
+        Me.lblCopyright.Location = New System.Drawing.Point(75, 249)
+        Me.lblCopyright.Name = "lblCopyright"
+        Me.lblCopyright.Size = New System.Drawing.Size(189, 20)
+        Me.lblCopyright.TabIndex = 23
+        Me.lblCopyright.Text = "Copyright (c) 2017-2021"
         '
         'PictureBox1
         '
@@ -162,7 +162,7 @@ Partial Class frmAbout
         Me.Controls.Add(Me.LinkLabel1)
         Me.Controls.Add(Me.btnClose)
         Me.Controls.Add(Me.PictureBox1)
-        Me.Controls.Add(Me.Label5)
+        Me.Controls.Add(Me.lblCopyright)
         Me.Controls.Add(Me.Label4)
         Me.Controls.Add(Me.Label3)
         Me.Controls.Add(Me.WebLink)
@@ -184,7 +184,7 @@ Partial Class frmAbout
     Friend WithEvents Label2 As Label
     Friend WithEvents Label3 As Label
     Friend WithEvents Label4 As Label
-    Friend WithEvents Label5 As Label
+    Friend WithEvents lblCopyright As Label
     Friend WithEvents PictureBox1 As PictureBox
     Friend WithEvents btnClose As Button
     Friend WithEvents Label1 As Label
