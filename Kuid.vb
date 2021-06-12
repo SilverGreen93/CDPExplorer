@@ -66,7 +66,7 @@ Public Class Kuid
     ''' <param name="userID">User ID</param>
     ''' <param name="contentID">Content ID</param>
     ''' <returns>True if all 2 are valid</returns>
-    Public Function SetKuid(ByVal userID As Integer, ByVal contentID As Integer) As Boolean
+    Public Function SetKuid(userID As Integer, contentID As Integer) As Boolean
         Return SetUserID(userID) AndAlso SetContentID(contentID)
     End Function
 
@@ -77,7 +77,7 @@ Public Class Kuid
     ''' <param name="contentID">Content ID</param>
     ''' <param name="version">Version</param>
     ''' <returns>True if all 3 are valid</returns>
-    Public Function SetKuid(ByVal userID As Integer, ByVal contentID As Integer, ByVal version As Byte) As Boolean
+    Public Function SetKuid(userID As Integer, contentID As Integer, version As Byte) As Boolean
         Return SetUserID(userID) AndAlso SetContentID(contentID) AndAlso SetVersion(version)
     End Function
 
@@ -155,7 +155,7 @@ Public Class Kuid
     ''' </summary>
     ''' <param name="userID">User ID as a 25-bit integer</param>
     ''' <returns>Always True</returns>
-    Public Function SetUserID(ByVal userID As Integer) As Boolean
+    Public Function SetUserID(userID As Integer) As Boolean
         For i As Integer = 0 To 3
             kuidValue(i) = BitConverter.GetBytes(userID)(i)
         Next
@@ -167,7 +167,7 @@ Public Class Kuid
     ''' </summary>
     ''' <param name="userID">User ID as 4 byte array</param>
     ''' <returns>True if userID is set correctly</returns>
-    Public Function SetUserID(ByVal userID As Byte()) As Boolean
+    Public Function SetUserID(userID As Byte()) As Boolean
         If userID.Length < 4 Then
             Return False
         End If
@@ -182,7 +182,7 @@ Public Class Kuid
     ''' </summary>
     ''' <param name="contentID">Content ID as integer</param>
     ''' <returns>Always True</returns>
-    Public Function SetContentID(ByVal contentID As Integer) As Boolean
+    Public Function SetContentID(contentID As Integer) As Boolean
         For i As Integer = 0 To 3
             kuidValue(i + 4) = BitConverter.GetBytes(contentID)(i)
         Next
@@ -194,7 +194,7 @@ Public Class Kuid
     ''' </summary>
     ''' <param name="contentID">Content ID as 4 byte array</param>
     ''' <returns>True if contentID is set correctly</returns>
-    Public Function SetContentID(ByVal contentID As Byte()) As Boolean
+    Public Function SetContentID(contentID As Byte()) As Boolean
         If contentID.Length < 4 Then
             Return False
         End If
@@ -209,7 +209,7 @@ Public Class Kuid
     ''' </summary>
     ''' <param name="ver">Version as single byte</param>
     ''' <returns>True if version is valid</returns>
-    Public Function SetVersion(ByVal ver As Integer) As Boolean
+    Public Function SetVersion(ver As Integer) As Boolean
         'check version number and integrate into userBytes if userBytes is not negative
         If ver >= 0 AndAlso ver < 128 Then
             'add the version number to byte 4 of userBytes and keep sign bit on bit 0
