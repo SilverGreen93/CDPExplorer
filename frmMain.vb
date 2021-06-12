@@ -454,14 +454,18 @@ Public Class frmMain
         Dim tagLength As UInteger = FileStr.ReadUInt32()
         Dim tagNameSize As Byte = FileStr.ReadByte()
         Dim tagName As String
-
         Dim status As Boolean
+        Dim tagNameAsKuid As New Kuid
 
         tagName = System.Text.Encoding.UTF8.GetString(FileStr.ReadBytes(tagNameSize - 1))
         FileStr.ReadByte() 'null terminator
 
+        'convert tagName to binary kuid to avoid signed vs unsigned compares
+        'for example <kuid:224567:2943774475> and <kuid:224567:-1351192821> represent the same kuid
+        tagNameAsKuid.SetKuid(tagName)
+
         'Check if we found the asset with the required kuid
-        If tagName = assetKuid.GetKuidAsString() AndAlso ParentContainer = "assets" Then
+        If tagNameAsKuid.GetKuidAsHexString() = assetKuid.GetKuidAsHexString() AndAlso ParentContainer = "assets" Then
             'resize the bytesCopied array to make room for our asset
             ReDim Preserve bytesCopied(UBound(bytesCopied) + tagLength + 13 + 4) '13 is the length of the "assets" tag
 

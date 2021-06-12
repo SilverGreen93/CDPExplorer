@@ -1,6 +1,9 @@
 ﻿Imports System.Globalization
 
 Public Class Kuid
+    Public Const MAXINT As Integer = 2 ^ 31 - 1
+    Public Const MININT As Integer = -2 ^ 31
+    Public Const MAXUINT As UInteger = 2 ^ 32 - 1
 
     Private ReadOnly kuidValue(7) As Byte
 
@@ -79,6 +82,25 @@ Public Class Kuid
     End Function
 
     ''' <summary>
+    ''' Converts number to fit into an Integer type
+    ''' </summary>
+    ''' <param name="num">Number to be converted to Integer</param>
+    ''' <returns>Integer representation or 0 on overflow</returns>
+    Private Function toInt32(num As Double) As Integer
+        If num > MAXUINT OrElse num < MININT Then
+            Return 0
+        End If
+
+        If num > MAXINT Then
+            'convert number to byte representation, then convert back to signed int32 to make sure we don't overflow
+            'in this case the result will always be negative
+            Return BitConverter.ToInt32(BitConverter.GetBytes(Convert.ToUInt32(num)), 0)
+        End If
+
+        Return Convert.ToInt32(num)
+    End Function
+
+    ''' <summary>
     ''' Set kuid from human-readable string: &lt;kuid:474195:10010&gt;
     ''' </summary>
     ''' <param name="kuid">Kuid as human-readable string</param>
@@ -100,25 +122,27 @@ Public Class Kuid
             '1234:12345
             If kuidParts.Length < 2 Then Return False 'kuid too short
 
-            SetUserID(Val(kuidParts(0)))
-            SetContentID(Val(kuidParts(1)))
+            SetUserID(toInt32(Val(kuidParts(0))))
+            SetContentID(toInt32(Val(kuidParts(1))))
 
-            If kuidParts.Length > 2 Then SetVersion(Val(kuidParts(2)))
+            If kuidParts.Length > 2 Then
+                SetVersion(toInt32(Val(kuidParts(2))))
+            End If
 
         Else
             'kuid starts with "kuid"
 
             If kuidParts.Length < 3 Then Return False 'kuid too short
 
-            SetUserID(Val(kuidParts(1)))
-            SetContentID(Val(kuidParts(2)))
+            SetUserID(toInt32(Val(kuidParts(1))))
+            SetContentID(toInt32(Val(kuidParts(2))))
 
             If kuidParts.Length = 3 AndAlso kuidParts(0).IndexOf("kuid2", StringComparison.OrdinalIgnoreCase) <> -1 Then
                 'In some cases we can have kuid2 with missing version number. In that case version is always 127
                 '<kuid2:146087:27023>
                 SetVersion(127)
             ElseIf kuidParts.Length > 3 Then
-                SetVersion(Val(kuidParts(3)))
+                SetVersion(toInt32(Val(kuidParts(3))))
             End If
 
         End If
@@ -185,7 +209,7 @@ Public Class Kuid
     ''' </summary>
     ''' <param name="ver">Version as single byte</param>
     ''' <returns>True if version is valid</returns>
-    Public Function SetVersion(ByVal ver As Byte) As Boolean
+    Public Function SetVersion(ByVal ver As Integer) As Boolean
         'check version number and integrate into userBytes if userBytes is not negative
         If ver >= 0 AndAlso ver < 128 Then
             'add the version number to byte 4 of userBytes and keep sign bit on bit 0
@@ -307,7 +331,7 @@ Public Class Kuid
     ''' Get kuid version as byte
     ''' </summary>
     ''' <returns>Kuid version as byte</returns>
-    Public Function GetVersion() As Byte
+    Public Function GetVersion() As Integer
         'if the UserID is negative, version will be 127, or 0 if is the result of an overflow in UserID
         Return Convert.ToInt32(kuidValue(3) >> 1) 'version is upper 7 bits of userByte 3
     End Function
@@ -439,6 +463,11 @@ Public Class Kuid
         Debug.Assert(GetUserID() = 16777032, "Kuid value failed!")
         Debug.Assert(GetContentID() = 123456, "Kuid value failed!")
         Debug.Assert(GetVersion() = 13, "Kuid value failed!")
+
+        SetKuid("<kuid:224567:2943774475>")
+        Debug.Assert(GetKuidAsString() = "<kuid:224567:-1351192821>", "Kuid conversion failed!")
+        SetKuid("<kuid:224567:-1351192821>")
+        Debug.Assert(GetKuidAsString() = "<kuid:224567:-1351192821>", "Kuid conversion failed!")
 
         MsgBox("Kuid conversion verification completed!")
     End Sub
