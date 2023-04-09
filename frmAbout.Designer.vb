@@ -97,7 +97,7 @@ Partial Class frmAbout
         Me.lblCopyright.Name = "lblCopyright"
         Me.lblCopyright.Size = New System.Drawing.Size(189, 20)
         Me.lblCopyright.TabIndex = 23
-        Me.lblCopyright.Text = "Copyright (c) 2017-2021"
+        Me.lblCopyright.Text = "Copyright (c) 2017-2023"
         '
         'PictureBox1
         '
