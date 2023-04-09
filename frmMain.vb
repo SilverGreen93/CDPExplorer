@@ -703,7 +703,7 @@ Public Class frmMain
     End Sub
 
     Private Sub FindToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles FindToolStripMenuItem.Click
-        frmFind.Show(Me)
+        frmFind.ShowDialog(Me)
     End Sub
 
     Private Sub FindNextToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles FindNextToolStripMenuItem.Click
