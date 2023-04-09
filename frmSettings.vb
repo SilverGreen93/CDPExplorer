@@ -2,26 +2,44 @@
 
     Private Sub optKuid_CheckedChanged(sender As Object, e As EventArgs) Handles optKuid.CheckedChanged
         lblExample.Text = "kuid 1234 5678.cdp"
+        ReformatExample()
     End Sub
 
     Private Sub optBuildKuid_CheckedChanged(sender As Object, e As EventArgs) Handles optBuildKuid.CheckedChanged
         lblExample.Text = "3.7 kuid 1234 5678.cdp"
+        ReformatExample()
     End Sub
 
     Private Sub optUsernameKuid_CheckedChanged(sender As Object, e As EventArgs) Handles optUsernameKuid.CheckedChanged
-        lblExample.Text = "Tree Acacia kuid 1234 5678.cdp"
+        lblExample.Text = "My Asset kuid 1234 5678.cdp"
+        ReformatExample()
     End Sub
 
     Private Sub optUsername_CheckedChanged(sender As Object, e As EventArgs) Handles optUsername.CheckedChanged
-        lblExample.Text = "Tree Acacia.cdp"
+        lblExample.Text = "My Asset.cdp"
+        ReformatExample()
     End Sub
 
     Private Sub optBuildUsername_CheckedChanged(sender As Object, e As EventArgs) Handles optBuildUsername.CheckedChanged
-        lblExample.Text = "3.7 Tree Acacia.cdp"
+        lblExample.Text = "3.7 My Asset.cdp"
+        ReformatExample()
     End Sub
 
     Private Sub optBuildUsernameKuid_CheckedChanged(sender As Object, e As EventArgs) Handles optBuildUsernameKuid.CheckedChanged
-        lblExample.Text = "3.7 Tree Acacia kuid 1234 5678.cdp"
+        lblExample.Text = "3.7 My Asset kuid 1234 5678.cdp"
+        ReformatExample()
+    End Sub
+
+    Private Sub chkUnderscore_CheckedChanged(sender As Object, e As EventArgs) Handles chkUnderscore.CheckedChanged
+        ReformatExample()
+    End Sub
+
+    Sub ReformatExample()
+        If chkUnderscore.Checked Then
+            lblExample.Text = lblExample.Text.Replace(" ", "_")
+        Else
+            lblExample.Text = lblExample.Text.Replace("_", " ")
+        End If
     End Sub
 
     Private Sub frmSettings_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -39,6 +57,8 @@
             Case frmMain.NameFormat.NAME_BUILD_USERNAME_KUID
                 optBuildUsernameKuid.Checked = True
         End Select
+
+        chkUnderscore.Checked = My.Settings.fileUseUnderscores
 
         Select Case My.Settings.fileSavePolicy
             Case frmMain.SavePolicy.SAVE_OVERWRITE
@@ -66,6 +86,8 @@
         ElseIf optBuildUsernameKuid.Checked Then
             My.Settings.fileNameFormat = frmMain.NameFormat.NAME_BUILD_USERNAME_KUID
         End If
+
+        My.Settings.fileUseUnderscores = chkUnderscore.Checked
 
         If optSaveOverwrite.Checked Then
             My.Settings.fileSavePolicy = frmMain.SavePolicy.SAVE_OVERWRITE

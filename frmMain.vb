@@ -79,22 +79,32 @@ Public Class frmMain
     End Function
 
     Function FormatPath(basePath As String, grdRow As DataGridViewRow) As String
+        Dim finalPath As String
+
         Select Case My.Settings.fileNameFormat
             Case NameFormat.NAME_KUID
-                Return basePath & "\" & RemoveIllegalFileNameChars(grdRow.Cells(0).Value.ToString) & ".cdp"
+                finalPath = RemoveIllegalFileNameChars(grdRow.Cells(0).Value.ToString) & ".cdp"
             Case NameFormat.NAME_BUILD_KUID
-                Return basePath & "\" & RemoveIllegalFileNameChars(grdRow.Cells(4).Value.ToString & grdRow.Cells(0).Value.ToString) & ".cdp"
+                finalPath = RemoveIllegalFileNameChars(grdRow.Cells(4).Value.ToString & grdRow.Cells(0).Value.ToString) & ".cdp"
             Case NameFormat.NAME_USERNAME_KUID
-                Return basePath & "\" & RemoveIllegalFileNameChars(grdRow.Cells(1).Value.ToString & grdRow.Cells(0).Value.ToString) & ".cdp"
+                finalPath = RemoveIllegalFileNameChars(grdRow.Cells(1).Value.ToString & grdRow.Cells(0).Value.ToString) & ".cdp"
             Case NameFormat.NAME_USERNAME
-                Return basePath & "\" & RemoveIllegalFileNameChars(grdRow.Cells(1).Value.ToString) & ".cdp"
+                finalPath = RemoveIllegalFileNameChars(grdRow.Cells(1).Value.ToString) & ".cdp"
             Case NameFormat.NAME_BUILD_USERNAME
-                Return basePath & "\" & RemoveIllegalFileNameChars(grdRow.Cells(4).Value.ToString & " " & grdRow.Cells(1).Value.ToString) & ".cdp"
+                finalPath = RemoveIllegalFileNameChars(grdRow.Cells(4).Value.ToString & " " & grdRow.Cells(1).Value.ToString) & ".cdp"
             Case NameFormat.NAME_BUILD_USERNAME_KUID
-                Return basePath & "\" & RemoveIllegalFileNameChars(grdRow.Cells(4).Value.ToString & " " & grdRow.Cells(1).Value.ToString & grdRow.Cells(0).Value.ToString) & ".cdp"
+                finalPath = RemoveIllegalFileNameChars(grdRow.Cells(4).Value.ToString & " " & grdRow.Cells(1).Value.ToString & grdRow.Cells(0).Value.ToString) & ".cdp"
+            Case Else
+                Return ""
         End Select
 
-        Return ""
+        If My.Settings.fileUseUnderscores Then
+            finalPath = basePath & "\" & finalPath.Replace(" ", "_")
+        Else
+            finalPath = basePath & "\" & finalPath
+        End If
+
+        Return finalPath
     End Function
 
 
