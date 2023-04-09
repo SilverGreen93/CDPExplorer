@@ -142,7 +142,7 @@ Public Class frmMain
         If Not My.Computer.FileSystem.FileExists(fileName) Then Exit Sub
 
         Try
-            fileStr = New BinaryReader(File.Open(fileName, FileMode.Open))
+            fileStr = New BinaryReader(File.Open(fileName, FileMode.Open, FileAccess.Read))
 
             fileStr.BaseStream.Seek(0, SeekOrigin.Begin)
 
@@ -412,7 +412,7 @@ Public Class frmMain
         If Not My.Computer.FileSystem.FileExists(fileName) Then Return False
 
         Try
-            FileStr = New BinaryReader(IO.File.Open(fileName, FileMode.Open))
+            FileStr = New BinaryReader(File.Open(fileName, FileMode.Open, FileAccess.Read))
 
             FileStr.BaseStream.Seek(0, SeekOrigin.Begin)
 
