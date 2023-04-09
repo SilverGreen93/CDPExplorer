@@ -12,7 +12,7 @@ There is no installation necessary. The application is ready to run. You can ass
 
 ## Building
 
-This project was built with Microsoft Visual Studio 2019 and .NET Framework 4.0.
+This project was built with Microsoft Visual Studio 2022 and .NET Framework 4.8.
 
 ## File Format Specifications
 
