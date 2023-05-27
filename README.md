@@ -2,6 +2,8 @@
 
 Utility aplication for browsing, searching and extracting Trainz Assets from CDP files.
 
+![CDP Explorer v4.0 screenshot](/screenshot.png?raw=true)
+
 ## Getting Started
 
 You can download a free copy of the code and build it yourself or download the latest Windows binary from the Releases tab.

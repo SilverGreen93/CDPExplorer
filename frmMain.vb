@@ -4,7 +4,6 @@ Imports System.Text.RegularExpressions
 
 Public Class frmMain
 
-    Dim fileName As String
     Dim kuidList As String
     Dim kuidNameList As String
     Dim totalAssets As Integer
@@ -23,32 +22,42 @@ Public Class frmMain
         EXTRACT_SELECTED
     End Enum
 
+    Enum ColIdx
+        COL_KUID
+        COL_USERNAME
+        COL_KIND
+        COL_CLASS
+        COL_BUILD
+        COL_REGION
+        COL_ERA
+        COL_DESCRIPTION
+        COL_FILENAME
+        COL_MAX
+    End Enum
+
     Sub ResetData()
         kuidList = ""
         kuidNameList = ""
         totalAssets = 0
-        gridKUIDs.RowCount = 1
+        gridKUIDs.RowCount = 0
+        lblCount.Text = "0 assets."
     End Sub
 
     Sub InitializeGrid()
-        gridKUIDs.ColumnCount = 8
-        gridKUIDs.Columns(0).Name = "KUID"
-        gridKUIDs.Columns(1).Name = "Username"
-        gridKUIDs.Columns(2).Name = "Kind"
-        gridKUIDs.Columns(3).Name = "Class"
-        gridKUIDs.Columns(4).Name = "Build"
-        gridKUIDs.Columns(5).Name = "Region"
-        gridKUIDs.Columns(6).Name = "Era"
-        gridKUIDs.Columns(7).Name = "Description"
+        gridKUIDs.ColumnCount = ColIdx.COL_MAX
+        gridKUIDs.Columns(ColIdx.COL_KUID).Name = "KUID"
+        gridKUIDs.Columns(ColIdx.COL_USERNAME).Name = "Username"
+        gridKUIDs.Columns(ColIdx.COL_KIND).Name = "Kind"
+        gridKUIDs.Columns(ColIdx.COL_CLASS).Name = "Class"
+        gridKUIDs.Columns(ColIdx.COL_BUILD).Name = "Build"
+        gridKUIDs.Columns(ColIdx.COL_REGION).Name = "Region"
+        gridKUIDs.Columns(ColIdx.COL_ERA).Name = "Era"
+        gridKUIDs.Columns(ColIdx.COL_DESCRIPTION).Name = "Description"
+        gridKUIDs.Columns(ColIdx.COL_FILENAME).Name = "Filename"
 
-        gridKUIDs.Columns(0).ReadOnly = True
-        gridKUIDs.Columns(1).ReadOnly = True
-        gridKUIDs.Columns(2).ReadOnly = True
-        gridKUIDs.Columns(3).ReadOnly = True
-        gridKUIDs.Columns(4).ReadOnly = True
-        gridKUIDs.Columns(5).ReadOnly = True
-        gridKUIDs.Columns(6).ReadOnly = True
-        gridKUIDs.Columns(7).ReadOnly = True
+        For i As Integer = 0 To ColIdx.COL_MAX - 1
+            gridKUIDs.Columns(i).ReadOnly = True
+        Next
     End Sub
 
     Sub ResizeGrid()
@@ -58,9 +67,6 @@ Public Class frmMain
 
     Sub SetTitle()
         Text = My.Application.Info.Title & " v" & My.Application.Info.Version.Major & "." & My.Application.Info.Version.Minor
-        If fileName <> "" Then
-            Text &= " - " & fileName
-        End If
     End Sub
 
     Function RemoveIllegalFileNameChars(input As String, Optional replacement As String = " ") As String
@@ -152,21 +158,21 @@ Public Class frmMain
             'Get the chump file length
             Dim ChumpLength As UInteger = fileStr.ReadUInt32
 
-            'Reset the asset details
-            ResetData()
             currentAsset = New Asset()
 
             Dim CurrentFilePointer As Long = fileStr.BaseStream.Position 'here we are right now
             Dim Depth As Integer = 0 'we are at the top level of the file
 
             While Not fileStr.BaseStream.Position = CurrentFilePointer + ChumpLength
-                ParseSubTags(fileStr, Depth, "")
+                ParseSubTags(fileName, fileStr, Depth, "")
             End While
 
             lblCount.Text = totalAssets & " assets."
             kuidList = kuidList.Remove(kuidList.Length - 1) 'remove the trailing comma
-            gridKUIDs.Rows.RemoveAt(0) 'remove the first row, it is empty
             gridKUIDs.AutoResizeColumns()
+            'make sure era and description columns are not too wide
+            gridKUIDs.Columns(ColIdx.COL_ERA).Width = 100
+            gridKUIDs.Columns(ColIdx.COL_DESCRIPTION).Width = 200
 
             fileStr.Close()
 
@@ -182,7 +188,7 @@ Public Class frmMain
     ''' <param name="FileStr">File stream</param>
     ''' <param name="Depth">Depth of the current container</param>
     ''' <param name="ParentContainer">Parent container name</param>
-    Sub ParseSubTags(ByRef FileStr As BinaryReader, ByVal Depth As Integer, ByVal ParentContainer As String)
+    Sub ParseSubTags(fileName As String, ByRef FileStr As BinaryReader, Depth As Integer, ParentContainer As String)
         Dim tagLength As UInteger = FileStr.ReadUInt32()
         Dim tagNameSize As Byte = FileStr.ReadByte()
         Dim tagName As String
@@ -202,7 +208,7 @@ Public Class frmMain
                 End If
 
                 While Not FileStr.BaseStream.Position = currentFilePointer + tagLength - tagNameSize - 2
-                    ParseSubTags(FileStr, Depth + 1, tagName)
+                    ParseSubTags(fileName, FileStr, Depth + 1, tagName)
                 End While
 
             Case 1 'integer
@@ -261,9 +267,9 @@ Public Class frmMain
                     ElseIf tagName = "kuid" Then
                         'For some legacy assets the kuid can be stored as string
                         currentAsset.AssetKuid.SetKuid(tagString)
-                        ElseIf tagName = "asset-filename" Then
-                            'For legacy assets which do not have username
-                            If currentAsset.Username = "Untitled" Then
+                    ElseIf tagName = "asset-filename" Then
+                        'For legacy assets which do not have username
+                        If currentAsset.Username = "Untitled" Then
                             currentAsset.Username = tagString
                         End If
                     End If
@@ -301,7 +307,8 @@ Public Class frmMain
                                             currentAsset.GetTrainzBuildAsString(),
                                             currentAsset.CategoryRegion,
                                             currentAsset.CategoryEra,
-                                            currentAsset.Description})
+                                            currentAsset.Description,
+                                            fileName})
 
             'Reset the asset details
             currentAsset = New Asset()
@@ -314,8 +321,8 @@ Public Class frmMain
     ''' </summary>
     ''' <param name="assetKuid">Kuid to search for</param>
     ''' <param name="exportPath">Path to write the new asset to</param>
-    Sub ExtractContent(ByRef assetKuid As Kuid, ByRef exportPath As String)
-        If CopyCDP(assetKuid) = False Then Exit Sub
+    Sub ExtractContent(ByRef assetKuid As Kuid, fileName As String, exportPath As String)
+        If CopyCDP(assetKuid, fileName) = False Then Exit Sub
 
         Try
             'add the "assets" container
@@ -395,11 +402,14 @@ Public Class frmMain
     ''' </summary>
     ''' <param name="assetKuid">The kuid to search for</param>
     ''' <returns>True if kuid is found</returns>
-    Function CopyCDP(ByRef assetKuid As Kuid) As Boolean
+    Function CopyCDP(ByRef assetKuid As Kuid, fileName As String) As Boolean
         Dim FileStr As BinaryReader
         Dim status As Boolean
 
-        If Not My.Computer.FileSystem.FileExists(fileName) Then Return False
+        If Not My.Computer.FileSystem.FileExists(fileName) Then
+            MessageBox.Show("File " & fileName & " does not exist anymore!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Return False
+        End If
 
         Try
             FileStr = New BinaryReader(File.Open(fileName, FileMode.Open, FileAccess.Read))
@@ -432,7 +442,9 @@ Public Class frmMain
 
             FileStr.Close()
 
-            If status = False Then Throw New Exception("The asset " & assetKuid.GetKuidAsString() & " could not be found in the CDP!")
+            If status = False Then
+                Throw New Exception("Asset " & assetKuid.GetKuidAsString() & " could not be found in " & fileName & "!")
+            End If
 
         Catch ex As Exception
             MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -509,40 +521,60 @@ Public Class frmMain
 
         Dim files As String() = My.Application.CommandLineArgs.ToArray
         If files.Length > 0 Then
-            fileName = files(0)
-            SetTitle()
-            lblStatus.Text = "Processing..."
-            Application.DoEvents()
-            ParseChump(fileName)
-            lblStatus.Text = "Ready."
+            For Each fileName In files
+                lblStatus.Text = "Processing " & fileName & "..."
+                Application.DoEvents()
+                ParseChump(fileName)
+            Next fileName
         End If
+        lblStatus.Text = "Ready."
     End Sub
 
     'a new instance of the application was started with new arguments
     Public Sub NewArgumentsReceived(args As String())
         If args.Length > 0 Then
             Dim files As String() = args.ToArray
-            If files.Length > 0 Then
-                fileName = files(0)
-                SetTitle()
-                lblStatus.Text = "Processing..."
-                Application.DoEvents()
-                ParseChump(fileName)
-                lblStatus.Text = "Ready."
-            End If
+            Dim notAdded As Boolean
+            For Each fileName In files
+                notAdded = True
+                For Each row As DataGridViewRow In gridKUIDs.Rows
+                    If row.Cells(8).Value.ToString = fileName Then
+                        MessageBox.Show(fileName & " is already added!", "Already added", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                        notAdded = False
+                        Exit For
+                    End If
+                Next row
+                If notAdded Then
+                    lblStatus.Text = "Processing " & fileName & "..."
+                    Application.DoEvents()
+                    ParseChump(fileName)
+                End If
+            Next fileName
         End If
+        lblStatus.Text = "Ready."
     End Sub
 
     Private Sub frmMain_DragDrop(sender As Object, e As DragEventArgs) Handles Me.DragDrop
         Dim files As String() = e.Data.GetData(DataFormats.FileDrop)
+        Dim notAdded As Boolean
         If files.Length > 0 Then
-            fileName = files(0)
-            SetTitle()
-            lblStatus.Text = "Processing..."
-            Application.DoEvents()
-            ParseChump(fileName)
-            lblStatus.Text = "Ready."
+            For Each fileName In files
+                notAdded = True
+                For Each row As DataGridViewRow In gridKUIDs.Rows
+                    If row.Cells(8).Value.ToString = fileName Then
+                        MessageBox.Show(fileName & " is already added!", "Already added", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                        notAdded = False
+                        Exit For
+                    End If
+                Next row
+                If notAdded Then
+                    lblStatus.Text = "Processing " & fileName & "..."
+                    Application.DoEvents()
+                    ParseChump(fileName)
+                End If
+            Next fileName
         End If
+        lblStatus.Text = "Ready."
     End Sub
 
     Private Sub frmMain_DragEnter(sender As Object, e As DragEventArgs) Handles Me.DragEnter
@@ -551,7 +583,7 @@ Public Class frmMain
         End If
     End Sub
 
-    Public Sub FindText(ByVal str As String)
+    Public Sub FindText(str As String)
         Dim searchIndex = 0
         Dim found As Boolean = False
         findString = str
@@ -619,13 +651,13 @@ Public Class frmMain
 
         If extractionMethod = ProcessingType.EXTRACT_ALL Then
             For row As Integer = 0 To gridKUIDs.Rows.Count - 1
-                ExtractContent(New Kuid(gridKUIDs.Rows(row).Cells(0).Value.ToString), FormatPath(FolderBrowserDialog.SelectedPath, gridKUIDs.Rows(row)))
+                ExtractContent(New Kuid(gridKUIDs.Rows(row).Cells(0).Value.ToString), gridKUIDs.Rows(row).Cells(8).Value.ToString, FormatPath(FolderBrowserDialog.SelectedPath, gridKUIDs.Rows(row)))
                 BackgroundWorker.ReportProgress(row / gridKUIDs.Rows.Count * 100)
                 If BackgroundWorker.CancellationPending Then Exit For
             Next
         ElseIf extractionMethod = ProcessingType.EXTRACT_SELECTED Then
             For row As Integer = 0 To gridKUIDs.SelectedRows.Count - 1
-                ExtractContent(New Kuid(gridKUIDs.SelectedRows(row).Cells(0).Value.ToString), FormatPath(FolderBrowserDialog.SelectedPath, gridKUIDs.SelectedRows(row)))
+                ExtractContent(New Kuid(gridKUIDs.SelectedRows(row).Cells(0).Value.ToString), gridKUIDs.SelectedRows(row).Cells(8).Value.ToString, FormatPath(FolderBrowserDialog.SelectedPath, gridKUIDs.SelectedRows(row)))
                 BackgroundWorker.ReportProgress(row / gridKUIDs.SelectedRows.Count * 100)
                 If BackgroundWorker.CancellationPending Then Exit For
             Next
@@ -680,17 +712,30 @@ Public Class frmMain
     End Sub
 
     Private Sub OpenCDPToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OpenCDPToolStripMenuItem.Click
-        OpenFileDialog.Title = "Open CDP"
+        Dim notAdded As Boolean
+        OpenFileDialog.Title = "Add CDP"
         OpenFileDialog.Filter = "CDP Files (*.cdp)|*.cdp"
         OpenFileDialog.FileName = ""
 
         If OpenFileDialog.ShowDialog() <> vbOK Then Exit Sub
 
-        fileName = OpenFileDialog.FileName
-        SetTitle()
-        lblStatus.Text = "Processing..."
-        Application.DoEvents()
-        ParseChump(fileName)
+        If OpenFileDialog.FileNames.Length > 0 Then
+            For Each fileName In OpenFileDialog.FileNames
+                notAdded = True
+                For Each row As DataGridViewRow In gridKUIDs.Rows
+                    If row.Cells(8).Value.ToString = fileName Then
+                        MessageBox.Show(fileName & " is already added!", "Already added", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                        notAdded = False
+                        Exit For
+                    End If
+                Next row
+                If notAdded Then
+                    lblStatus.Text = "Processing " & fileName & "..."
+                    Application.DoEvents()
+                    ParseChump(fileName)
+                End If
+            Next fileName
+        End If
         lblStatus.Text = "Ready."
     End Sub
 
@@ -768,6 +813,10 @@ Public Class frmMain
 
     Private Sub SettingsToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles SettingsToolStripMenuItem.Click
         frmSettings.ShowDialog(Me)
+    End Sub
+
+    Private Sub ToolStripMenuItem6_Click(sender As Object, e As EventArgs) Handles ToolStripMenuItem6.Click
+        ResetData()
     End Sub
 
 End Class

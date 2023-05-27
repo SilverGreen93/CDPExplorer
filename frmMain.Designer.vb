@@ -38,6 +38,7 @@ Partial Class frmMain
         Me.FIleToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.OpenCDPToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ExportAsCSVToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripMenuItem6 = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         Me.ExitToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.EditToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -115,6 +116,7 @@ Partial Class frmMain
         'OpenFileDialog
         '
         Me.OpenFileDialog.CheckFileExists = False
+        Me.OpenFileDialog.Multiselect = True
         '
         'StatusStrip
         '
@@ -151,7 +153,7 @@ Partial Class frmMain
         '
         'FIleToolStripMenuItem
         '
-        Me.FIleToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.OpenCDPToolStripMenuItem, Me.ExportAsCSVToolStripMenuItem, Me.ToolStripMenuItem1, Me.ExitToolStripMenuItem})
+        Me.FIleToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.OpenCDPToolStripMenuItem, Me.ExportAsCSVToolStripMenuItem, Me.ToolStripMenuItem6, Me.ToolStripMenuItem1, Me.ExitToolStripMenuItem})
         Me.FIleToolStripMenuItem.Name = "FIleToolStripMenuItem"
         Me.FIleToolStripMenuItem.Size = New System.Drawing.Size(46, 24)
         Me.FIleToolStripMenuItem.Text = "File"
@@ -161,7 +163,7 @@ Partial Class frmMain
         Me.OpenCDPToolStripMenuItem.Name = "OpenCDPToolStripMenuItem"
         Me.OpenCDPToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.O), System.Windows.Forms.Keys)
         Me.OpenCDPToolStripMenuItem.Size = New System.Drawing.Size(242, 26)
-        Me.OpenCDPToolStripMenuItem.Text = "Open CDP..."
+        Me.OpenCDPToolStripMenuItem.Text = "Add CDP..."
         '
         'ExportAsCSVToolStripMenuItem
         '
@@ -169,6 +171,13 @@ Partial Class frmMain
         Me.ExportAsCSVToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.E), System.Windows.Forms.Keys)
         Me.ExportAsCSVToolStripMenuItem.Size = New System.Drawing.Size(242, 26)
         Me.ExportAsCSVToolStripMenuItem.Text = "Export as CSV..."
+        '
+        'ToolStripMenuItem6
+        '
+        Me.ToolStripMenuItem6.Name = "ToolStripMenuItem6"
+        Me.ToolStripMenuItem6.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.W), System.Windows.Forms.Keys)
+        Me.ToolStripMenuItem6.Size = New System.Drawing.Size(242, 26)
+        Me.ToolStripMenuItem6.Text = "Close all"
         '
         'ToolStripMenuItem1
         '
@@ -355,4 +364,5 @@ Partial Class frmMain
     Friend WithEvents FindNextToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ToolStripMenuItem4 As ToolStripSeparator
     Friend WithEvents SettingsToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents ToolStripMenuItem6 As ToolStripMenuItem
 End Class
