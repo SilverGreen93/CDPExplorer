@@ -1,35 +1,5 @@
 ﻿Public Class frmSettings
 
-    Private Sub optKuid_CheckedChanged(sender As Object, e As EventArgs) Handles optKuid.CheckedChanged
-        lblExample.Text = "kuid 1234 5678.cdp"
-        ReformatExample()
-    End Sub
-
-    Private Sub optBuildKuid_CheckedChanged(sender As Object, e As EventArgs) Handles optBuildKuid.CheckedChanged
-        lblExample.Text = "3.7 kuid 1234 5678.cdp"
-        ReformatExample()
-    End Sub
-
-    Private Sub optUsernameKuid_CheckedChanged(sender As Object, e As EventArgs) Handles optUsernameKuid.CheckedChanged
-        lblExample.Text = "My Asset kuid 1234 5678.cdp"
-        ReformatExample()
-    End Sub
-
-    Private Sub optUsername_CheckedChanged(sender As Object, e As EventArgs) Handles optUsername.CheckedChanged
-        lblExample.Text = "My Asset.cdp"
-        ReformatExample()
-    End Sub
-
-    Private Sub optBuildUsername_CheckedChanged(sender As Object, e As EventArgs) Handles optBuildUsername.CheckedChanged
-        lblExample.Text = "3.7 My Asset.cdp"
-        ReformatExample()
-    End Sub
-
-    Private Sub optBuildUsernameKuid_CheckedChanged(sender As Object, e As EventArgs) Handles optBuildUsernameKuid.CheckedChanged
-        lblExample.Text = "3.7 My Asset kuid 1234 5678.cdp"
-        ReformatExample()
-    End Sub
-
     Private Sub chkUnderscore_CheckedChanged(sender As Object, e As EventArgs) Handles chkUnderscore.CheckedChanged
         ReformatExample()
     End Sub
@@ -43,20 +13,9 @@
     End Sub
 
     Private Sub frmSettings_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        Select Case My.Settings.fileNameFormat
-            Case frmMain.NameFormat.NAME_KUID
-                optKuid.Checked = True
-            Case frmMain.NameFormat.NAME_BUILD_KUID
-                optBuildKuid.Checked = True
-            Case frmMain.NameFormat.NAME_USERNAME_KUID
-                optUsernameKuid.Checked = True
-            Case frmMain.NameFormat.NAME_USERNAME
-                optUsername.Checked = True
-            Case frmMain.NameFormat.NAME_BUILD_USERNAME
-                optBuildUsername.Checked = True
-            Case frmMain.NameFormat.NAME_BUILD_USERNAME_KUID
-                optBuildUsernameKuid.Checked = True
-        End Select
+        cmbPart1.SelectedItem = My.Settings.fileNamePart1
+        cmbPart2.SelectedItem = My.Settings.fileNamePart2
+        cmbPart3.SelectedItem = My.Settings.fileNamePart3
 
         chkUnderscore.Checked = My.Settings.fileUseUnderscores
 
@@ -73,19 +32,9 @@
     End Sub
 
     Private Sub btnSave_Click(sender As Object, e As EventArgs) Handles btnSave.Click
-        If optKuid.Checked Then
-            My.Settings.fileNameFormat = frmMain.NameFormat.NAME_KUID
-        ElseIf optBuildKuid.Checked Then
-            My.Settings.fileNameFormat = frmMain.NameFormat.NAME_BUILD_KUID
-        ElseIf optUsernameKuid.Checked Then
-            My.Settings.fileNameFormat = frmMain.NameFormat.NAME_USERNAME_KUID
-        ElseIf optUsername.Checked Then
-            My.Settings.fileNameFormat = frmMain.NameFormat.NAME_USERNAME
-        ElseIf optBuildUsername.Checked Then
-            My.Settings.fileNameFormat = frmMain.NameFormat.NAME_BUILD_USERNAME
-        ElseIf optBuildUsernameKuid.Checked Then
-            My.Settings.fileNameFormat = frmMain.NameFormat.NAME_BUILD_USERNAME_KUID
-        End If
+        My.Settings.fileNamePart1 = cmbPart1.SelectedItem
+        My.Settings.fileNamePart2 = cmbPart2.SelectedItem
+        My.Settings.fileNamePart3 = cmbPart3.SelectedItem
 
         My.Settings.fileUseUnderscores = chkUnderscore.Checked
 
@@ -94,5 +43,30 @@
         ElseIf optSaveSkip.Checked Then
             My.Settings.fileSavePolicy = frmMain.SavePolicy.SAVE_SKIP
         End If
+    End Sub
+
+    Private Sub cmbSelectedIndexChanged(sender As Object, e As EventArgs) Handles cmbPart1.SelectedIndexChanged, cmbPart2.SelectedIndexChanged, cmbPart3.SelectedIndexChanged
+        Dim ex As String = ""
+        Dim lc As New List(Of ComboBox)({cmbPart1, cmbPart2, cmbPart3})
+
+        If cmbPart1.SelectedItem = "(none)" AndAlso cmbPart2.SelectedItem = "(none)" AndAlso cmbPart3.SelectedItem = "(none)" Then
+            cmbPart1.SelectedItem = "KUID"
+        End If
+
+        For Each c In lc
+            Select Case c.SelectedItem
+                Case "KUID"
+                    ex &= "kuid 1234 5678 "
+                Case "build"
+                    ex &= "4.5 "
+                Case "username"
+                    ex &= "My Asset "
+            End Select
+        Next c
+
+        ex = ex.Trim()
+        ex &= ".cdp"
+        lblExample.Text = ex
+        ReformatExample()
     End Sub
 End Class

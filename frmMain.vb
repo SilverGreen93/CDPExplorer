@@ -13,15 +13,6 @@ Public Class frmMain
     Dim currentAsset As Asset
     Public findString As String
 
-    Public Enum NameFormat
-        NAME_KUID
-        NAME_BUILD_KUID
-        NAME_USERNAME_KUID
-        NAME_USERNAME
-        NAME_BUILD_USERNAME
-        NAME_BUILD_USERNAME_KUID
-    End Enum
-
     Public Enum SavePolicy
         SAVE_OVERWRITE
         SAVE_SKIP
@@ -79,24 +70,23 @@ Public Class frmMain
     End Function
 
     Function FormatPath(basePath As String, grdRow As DataGridViewRow) As String
-        Dim finalPath As String
+        Dim finalPath As String = ""
 
-        Select Case My.Settings.fileNameFormat
-            Case NameFormat.NAME_KUID
-                finalPath = RemoveIllegalFileNameChars(grdRow.Cells(0).Value.ToString) & ".cdp"
-            Case NameFormat.NAME_BUILD_KUID
-                finalPath = RemoveIllegalFileNameChars(grdRow.Cells(4).Value.ToString & grdRow.Cells(0).Value.ToString) & ".cdp"
-            Case NameFormat.NAME_USERNAME_KUID
-                finalPath = RemoveIllegalFileNameChars(grdRow.Cells(1).Value.ToString & grdRow.Cells(0).Value.ToString) & ".cdp"
-            Case NameFormat.NAME_USERNAME
-                finalPath = RemoveIllegalFileNameChars(grdRow.Cells(1).Value.ToString) & ".cdp"
-            Case NameFormat.NAME_BUILD_USERNAME
-                finalPath = RemoveIllegalFileNameChars(grdRow.Cells(4).Value.ToString & " " & grdRow.Cells(1).Value.ToString) & ".cdp"
-            Case NameFormat.NAME_BUILD_USERNAME_KUID
-                finalPath = RemoveIllegalFileNameChars(grdRow.Cells(4).Value.ToString & " " & grdRow.Cells(1).Value.ToString & grdRow.Cells(0).Value.ToString) & ".cdp"
-            Case Else
-                Return ""
-        End Select
+        Dim lp As New List(Of String)({My.Settings.fileNamePart1, My.Settings.fileNamePart2, My.Settings.fileNamePart3})
+
+        For Each part In lp
+            Select Case part
+                Case "KUID"
+                    finalPath &= RemoveIllegalFileNameChars(grdRow.Cells(0).Value.ToString) & " "
+                Case "build"
+                    finalPath &= RemoveIllegalFileNameChars(grdRow.Cells(4).Value.ToString) & " "
+                Case "username"
+                    finalPath &= RemoveIllegalFileNameChars(grdRow.Cells(1).Value.ToString) & " "
+            End Select
+        Next part
+
+        finalPath = finalPath.Trim()
+        finalPath &= ".cdp"
 
         If My.Settings.fileUseUnderscores Then
             finalPath = basePath & "\" & finalPath.Replace(" ", "_")

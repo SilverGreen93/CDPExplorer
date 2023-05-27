@@ -29,15 +29,12 @@ Partial Class frmSettings
         Me.optSaveSkip = New System.Windows.Forms.RadioButton()
         Me.optSaveOverwrite = New System.Windows.Forms.RadioButton()
         Me.GroupBox2 = New System.Windows.Forms.GroupBox()
-        Me.chkUnderscore = New System.Windows.Forms.CheckBox()
+        Me.cmbPart3 = New System.Windows.Forms.ComboBox()
+        Me.cmbPart2 = New System.Windows.Forms.ComboBox()
+        Me.cmbPart1 = New System.Windows.Forms.ComboBox()
         Me.lblExample = New System.Windows.Forms.Label()
-        Me.optBuildUsernameKuid = New System.Windows.Forms.RadioButton()
-        Me.optBuildUsername = New System.Windows.Forms.RadioButton()
-        Me.optUsernameKuid = New System.Windows.Forms.RadioButton()
         Me.Label1 = New System.Windows.Forms.Label()
-        Me.optUsername = New System.Windows.Forms.RadioButton()
-        Me.optBuildKuid = New System.Windows.Forms.RadioButton()
-        Me.optKuid = New System.Windows.Forms.RadioButton()
+        Me.chkUnderscore = New System.Windows.Forms.CheckBox()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         Me.SuspendLayout()
@@ -45,7 +42,7 @@ Partial Class frmSettings
         'btnSave
         '
         Me.btnSave.DialogResult = System.Windows.Forms.DialogResult.OK
-        Me.btnSave.Location = New System.Drawing.Point(53, 310)
+        Me.btnSave.Location = New System.Drawing.Point(53, 266)
         Me.btnSave.Name = "btnSave"
         Me.btnSave.Size = New System.Drawing.Size(128, 36)
         Me.btnSave.TabIndex = 0
@@ -55,7 +52,7 @@ Partial Class frmSettings
         'btnCancel
         '
         Me.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.btnCancel.Location = New System.Drawing.Point(218, 310)
+        Me.btnCancel.Location = New System.Drawing.Point(218, 266)
         Me.btnCancel.Name = "btnCancel"
         Me.btnCancel.Size = New System.Drawing.Size(128, 36)
         Me.btnCancel.TabIndex = 1
@@ -66,7 +63,7 @@ Partial Class frmSettings
         '
         Me.GroupBox1.Controls.Add(Me.optSaveSkip)
         Me.GroupBox1.Controls.Add(Me.optSaveOverwrite)
-        Me.GroupBox1.Location = New System.Drawing.Point(12, 223)
+        Me.GroupBox1.Location = New System.Drawing.Point(12, 179)
         Me.GroupBox1.Name = "GroupBox1"
         Me.GroupBox1.Size = New System.Drawing.Size(372, 78)
         Me.GroupBox1.TabIndex = 4
@@ -97,123 +94,84 @@ Partial Class frmSettings
         '
         'GroupBox2
         '
+        Me.GroupBox2.Controls.Add(Me.cmbPart3)
+        Me.GroupBox2.Controls.Add(Me.cmbPart2)
+        Me.GroupBox2.Controls.Add(Me.cmbPart1)
         Me.GroupBox2.Controls.Add(Me.chkUnderscore)
         Me.GroupBox2.Controls.Add(Me.lblExample)
-        Me.GroupBox2.Controls.Add(Me.optBuildUsernameKuid)
-        Me.GroupBox2.Controls.Add(Me.optBuildUsername)
-        Me.GroupBox2.Controls.Add(Me.optUsernameKuid)
         Me.GroupBox2.Controls.Add(Me.Label1)
-        Me.GroupBox2.Controls.Add(Me.optUsername)
-        Me.GroupBox2.Controls.Add(Me.optBuildKuid)
-        Me.GroupBox2.Controls.Add(Me.optKuid)
         Me.GroupBox2.Location = New System.Drawing.Point(12, 12)
         Me.GroupBox2.Name = "GroupBox2"
-        Me.GroupBox2.Size = New System.Drawing.Size(372, 205)
+        Me.GroupBox2.Size = New System.Drawing.Size(372, 161)
         Me.GroupBox2.TabIndex = 5
         Me.GroupBox2.TabStop = False
         Me.GroupBox2.Text = "CDP file export name"
         '
+        'cmbPart3
+        '
+        Me.cmbPart3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cmbPart3.FormattingEnabled = True
+        Me.cmbPart3.Items.AddRange(New Object() {"KUID", "username", "build", "(none)"})
+        Me.cmbPart3.Location = New System.Drawing.Point(238, 32)
+        Me.cmbPart3.Name = "cmbPart3"
+        Me.cmbPart3.Size = New System.Drawing.Size(108, 24)
+        Me.cmbPart3.TabIndex = 13
+        '
+        'cmbPart2
+        '
+        Me.cmbPart2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cmbPart2.FormattingEnabled = True
+        Me.cmbPart2.Items.AddRange(New Object() {"KUID", "username", "build", "(none)"})
+        Me.cmbPart2.Location = New System.Drawing.Point(124, 32)
+        Me.cmbPart2.Name = "cmbPart2"
+        Me.cmbPart2.Size = New System.Drawing.Size(108, 24)
+        Me.cmbPart2.TabIndex = 12
+        '
+        'cmbPart1
+        '
+        Me.cmbPart1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cmbPart1.FormattingEnabled = True
+        Me.cmbPart1.Items.AddRange(New Object() {"KUID", "username", "build", "(none)"})
+        Me.cmbPart1.Location = New System.Drawing.Point(10, 32)
+        Me.cmbPart1.Name = "cmbPart1"
+        Me.cmbPart1.Size = New System.Drawing.Size(108, 24)
+        Me.cmbPart1.TabIndex = 11
+        '
+        'lblExample
+        '
+        Me.lblExample.AutoSize = True
+        Me.lblExample.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.2!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(238, Byte))
+        Me.lblExample.Location = New System.Drawing.Point(6, 130)
+        Me.lblExample.Name = "lblExample"
+        Me.lblExample.Size = New System.Drawing.Size(170, 20)
+        Me.lblExample.TabIndex = 9
+        Me.lblExample.Text = "kuid 1234 5678.cdp"
+        '
+        'Label1
+        '
+        Me.Label1.AutoSize = True
+        Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.2!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(238, Byte))
+        Me.Label1.Location = New System.Drawing.Point(6, 100)
+        Me.Label1.Name = "Label1"
+        Me.Label1.Size = New System.Drawing.Size(163, 20)
+        Me.Label1.TabIndex = 6
+        Me.Label1.Text = "Example filename:"
+        '
         'chkUnderscore
         '
         Me.chkUnderscore.AutoSize = True
-        Me.chkUnderscore.Location = New System.Drawing.Point(22, 106)
+        Me.chkUnderscore.Location = New System.Drawing.Point(10, 70)
         Me.chkUnderscore.Name = "chkUnderscore"
         Me.chkUnderscore.Size = New System.Drawing.Size(241, 20)
         Me.chkUnderscore.TabIndex = 10
         Me.chkUnderscore.Text = "Use underscores instead of spaces"
         Me.chkUnderscore.UseVisualStyleBackColor = True
         '
-        'lblExample
-        '
-        Me.lblExample.AutoSize = True
-        Me.lblExample.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.2!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(238, Byte))
-        Me.lblExample.Location = New System.Drawing.Point(6, 169)
-        Me.lblExample.Name = "lblExample"
-        Me.lblExample.Size = New System.Drawing.Size(170, 20)
-        Me.lblExample.TabIndex = 9
-        Me.lblExample.Text = "kuid 1234 5678.cdp"
-        '
-        'optBuildUsernameKuid
-        '
-        Me.optBuildUsernameKuid.AutoSize = True
-        Me.optBuildUsernameKuid.Location = New System.Drawing.Point(170, 75)
-        Me.optBuildUsernameKuid.Name = "optBuildUsernameKuid"
-        Me.optBuildUsernameKuid.Size = New System.Drawing.Size(174, 20)
-        Me.optBuildUsernameKuid.TabIndex = 9
-        Me.optBuildUsernameKuid.TabStop = True
-        Me.optBuildUsernameKuid.Text = "build + username + KUID"
-        Me.optBuildUsernameKuid.UseVisualStyleBackColor = True
-        '
-        'optBuildUsername
-        '
-        Me.optBuildUsername.AutoSize = True
-        Me.optBuildUsername.Location = New System.Drawing.Point(170, 48)
-        Me.optBuildUsername.Name = "optBuildUsername"
-        Me.optBuildUsername.Size = New System.Drawing.Size(130, 20)
-        Me.optBuildUsername.TabIndex = 8
-        Me.optBuildUsername.TabStop = True
-        Me.optBuildUsername.Text = "build + username"
-        Me.optBuildUsername.UseVisualStyleBackColor = True
-        '
-        'optUsernameKuid
-        '
-        Me.optUsernameKuid.AutoSize = True
-        Me.optUsernameKuid.Location = New System.Drawing.Point(22, 75)
-        Me.optUsernameKuid.Name = "optUsernameKuid"
-        Me.optUsernameKuid.Size = New System.Drawing.Size(132, 20)
-        Me.optUsernameKuid.TabIndex = 7
-        Me.optUsernameKuid.TabStop = True
-        Me.optUsernameKuid.Text = "username + KUID"
-        Me.optUsernameKuid.UseVisualStyleBackColor = True
-        '
-        'Label1
-        '
-        Me.Label1.AutoSize = True
-        Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.2!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(238, Byte))
-        Me.Label1.Location = New System.Drawing.Point(6, 140)
-        Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(163, 20)
-        Me.Label1.TabIndex = 6
-        Me.Label1.Text = "Example filename:"
-        '
-        'optUsername
-        '
-        Me.optUsername.AutoSize = True
-        Me.optUsername.Location = New System.Drawing.Point(170, 21)
-        Me.optUsername.Name = "optUsername"
-        Me.optUsername.Size = New System.Drawing.Size(88, 20)
-        Me.optUsername.TabIndex = 4
-        Me.optUsername.TabStop = True
-        Me.optUsername.Text = "username"
-        Me.optUsername.UseVisualStyleBackColor = True
-        '
-        'optBuildKuid
-        '
-        Me.optBuildKuid.AutoSize = True
-        Me.optBuildKuid.Location = New System.Drawing.Point(22, 48)
-        Me.optBuildKuid.Name = "optBuildKuid"
-        Me.optBuildKuid.Size = New System.Drawing.Size(101, 20)
-        Me.optBuildKuid.TabIndex = 3
-        Me.optBuildKuid.TabStop = True
-        Me.optBuildKuid.Text = "build + KUID"
-        Me.optBuildKuid.UseVisualStyleBackColor = True
-        '
-        'optKuid
-        '
-        Me.optKuid.AutoSize = True
-        Me.optKuid.Location = New System.Drawing.Point(22, 21)
-        Me.optKuid.Name = "optKuid"
-        Me.optKuid.Size = New System.Drawing.Size(59, 20)
-        Me.optKuid.TabIndex = 2
-        Me.optKuid.TabStop = True
-        Me.optKuid.Text = "KUID"
-        Me.optKuid.UseVisualStyleBackColor = True
-        '
         'frmSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(397, 361)
+        Me.ClientSize = New System.Drawing.Size(397, 311)
         Me.Controls.Add(Me.GroupBox2)
         Me.Controls.Add(Me.GroupBox1)
         Me.Controls.Add(Me.btnCancel)
@@ -238,12 +196,9 @@ Partial Class frmSettings
     Friend WithEvents optSaveSkip As RadioButton
     Friend WithEvents optSaveOverwrite As RadioButton
     Friend WithEvents Label1 As Label
-    Friend WithEvents optUsername As RadioButton
-    Friend WithEvents optBuildKuid As RadioButton
-    Friend WithEvents optKuid As RadioButton
-    Friend WithEvents optBuildUsername As RadioButton
-    Friend WithEvents optUsernameKuid As RadioButton
     Friend WithEvents lblExample As Label
-    Friend WithEvents optBuildUsernameKuid As RadioButton
+    Friend WithEvents cmbPart3 As ComboBox
+    Friend WithEvents cmbPart2 As ComboBox
+    Friend WithEvents cmbPart1 As ComboBox
     Friend WithEvents chkUnderscore As CheckBox
 End Class
