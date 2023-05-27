@@ -13,6 +13,7 @@ It is represented internally on 64 bits as follows:
 The first 32 bits combines the UserID and version, the last 32 bits are dedicated to the ContentID. Below is the representation on bits:
 
 1. First 32 bits:
+
 ```
 3        2        1        0      0
 1....... 3....... 5....... 7......0
@@ -23,6 +24,7 @@ U = UserID range: 0-16777215 (total range: -16777216 -> 16777215)
 ```
 
 2. Last 32 bits:
+
 ```
 3        2        1        0      0
 1....... 3....... 5....... 7......0
@@ -30,6 +32,7 @@ SNNNNNNN NNNNNNNN NNNNNNNN NNNNNNNN
 S = ContentID sign
 N = ContentID range: 0-2147483647 (total range: -2147483648 -> 2147483647)
 ```
+
 The bytes are always stored in little-endian. i.e. 101085(dec) = 00018ADD(hex) -> store as: DD 8A 01 00
 
 ## Kuid examples
@@ -65,8 +68,9 @@ If UserID is negative, the Version bits should be invalid because the sign of th
 
 There are some exceptions that will occur only on overflow. For example, if the UserID is greater than 16777215, say 16777216, it will overflow, but the version bits will remain 0. Such a KUID will be rendered by Trainz as \<kuid2:-16777216:12345:0\> although it should be \<kuid:-16777216:12345\>.
 
-In general, kuids are stored in the UUUVNNNN format, but mapfiles (*.trc, *.trk, *.gnd...) and assets.tdx store kuids in NNNNUUUV format, so the UserID+Version bytes are switched with the ContentID bytes (a-b-c-d:e-f-g-h -> e-f-g-h:a-b-c-d).
+In general, kuids are stored in the UUUVNNNN format, but mapfiles (\*.trc, \*.trk, \*.gnd...) and assets.tdx store kuids in NNNNUUUV format, so the UserID+Version bytes are switched with the ContentID bytes (a-b-c-d:e-f-g-h -> e-f-g-h:a-b-c-d).
 
 Example:
+
 * In config.chump: \<kuid:474195:100073\> will be stored as: 53 3C 07 00 E9 86 01 00
 * In profile.trk: \<kuid:474195:100073\> will be stored as: E9 86 01 00 53 3C 07 00

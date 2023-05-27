@@ -1,4 +1,4 @@
-# CHUMP File Format Specification (*.chump, *.cdp)
+# CHUMP File Format Specification (\*.chump, \*.cdp)
 
 A chump file or cdp file is a binary coded file for storing Trainz Assets of configuration files in a compact format, easy to process by the game.
 
@@ -19,19 +19,19 @@ All data is stored in little-endian (least significant byte first).
 
 After the header, the file contents begins:
 
-* For Each Tag:  
-  * 4 bytes: Tag length e.g. 0D 00 00 00 (13 bytes) - including sub-tags if it is a container  
-  * 1 byte: Tag name length => e.g. 05 (5 bytes including null terminator)  
+* For Each Tag:
+  * 4 bytes: Tag length e.g. 0D 00 00 00 (13 bytes) - including sub-tags if it is a container
+  * 1 byte: Tag name length => e.g. 05 (5 bytes including null terminator)
   * max 254 bytes: Tag name string => e.g. name
   * 1 byte: Null terminator => 00
   * 1 byte: Tag value type => e.g. 03 (string)
-  *	If Tag value type = container
+  * If Tag value type = container
     * repeat For recursively, parse sub-tags
   * Else
     * n bytes: Tag value/data (see exmamples below)
   * End If
 * End For
-						
+
 ### Tag value types
 
 There are 7 different types of data that a tag can store. This is indicated by the Tag type byte and can be one of the following:
@@ -44,7 +44,7 @@ There are 7 different types of data that a tag can store. This is indicated by t
 * 05 = NULL => empty tag (no value)
 * 0D = KUID => 8 bytes kuid in UUUVNNNN format (see [KUID Format Specification](kuid-format.md))
 
-### Example of tags:
+### Example of tags
 
 * 0D 00 00 00 05 n a m e 00 03 m i h a i 00
   * 0D 00 00 00 = total tag length is 13 bytes
@@ -65,7 +65,6 @@ There are 7 different types of data that a tag can store. This is indicated by t
   * 01 = tag value type: integer
   * 22 1E D8 0A = tab value: 181,935,650
 
-
 ## Standard CDP File Structure
 
 This is an example of CDP file in user-readable format.
@@ -73,29 +72,29 @@ This is an example of CDP file in user-readable format.
 ```
 assets
 {
-	<kuid:474195:100073>
-	{
-		username        "My Asset"
-		kuid            <kuid:474195:100073>
-		mesh-table
-		{
+    <kuid:474195:100073>
+    {
+        username        "My Asset"
+        kuid            <kuid:474195:100073>
+        mesh-table
+        {
             default
             {
                 mesh            "test.im"
                 auto-create     1
             }
-		}
-		compression     "LZSS"
-		files
-		{
-			test.im     #-# binary-data #-#
-		}
-		dsid            "7248:1375824714"
-	}
+        }
+        compression     "LZSS"
+        files
+        {
+            test.im     #-# binary-data #-#
+        }
+        dsid            "7248:1375824714"
+    }
 }
 contents-table
 {
-	0       <kuid:474195:100073>
+    0       <kuid:474195:100073>
 }
 kuid-table
 {
@@ -109,6 +108,7 @@ username        "unknown"
 ```
 
 There are 4 containers:
+
 * **assets** - has a subcontainer for each asset that is packed in the cdp file.
   * Each subcontainer is named as the kuid of the asset in clear text.
   * The subcontainer has an exact copy of the config.txt of the asset that is packed.
@@ -118,6 +118,7 @@ There are 4 containers:
 * **kuid-table**, **obsolete-table** - always present, can be ignored.
 
 In the end, there are 3 required tags:
+
 * **kind** - must be "archive"
 * **package-version** - always 1
 * **username** - always "unknown"
