@@ -64,7 +64,7 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>cdp.ico</ApplicationIcon>
+    <ApplicationIcon>icons\cdp.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
@@ -180,7 +180,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="cdp.ico" />
+    <Content Include="icons\cdp.ico" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "CDP Explorer", "CDP Explorer.vbproj", "{0E1D8742-095F-4C47-8A3A-9B4E1E9BBC48}"
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "CDP Explorer", "CDP Explorer\CDP Explorer.vbproj", "{0E1D8742-095F-4C47-8A3A-9B4E1E9BBC48}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
