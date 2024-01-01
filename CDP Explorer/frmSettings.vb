@@ -20,6 +20,8 @@
         chkUnderscore.Checked = My.Settings.fileUseUnderscores
 
         Select Case My.Settings.fileSavePolicy
+            Case frmMain.SavePolicy.SAVE_RENAME
+                optSaveRename.Checked = True
             Case frmMain.SavePolicy.SAVE_OVERWRITE
                 optSaveOverwrite.Checked = True
             Case frmMain.SavePolicy.SAVE_SKIP
@@ -38,7 +40,9 @@
 
         My.Settings.fileUseUnderscores = chkUnderscore.Checked
 
-        If optSaveOverwrite.Checked Then
+        If optSaveRename.Checked Then
+            My.Settings.fileSavePolicy = frmMain.SavePolicy.SAVE_RENAME
+        ElseIf optSaveOverwrite.Checked Then
             My.Settings.fileSavePolicy = frmMain.SavePolicy.SAVE_OVERWRITE
         ElseIf optSaveSkip.Checked Then
             My.Settings.fileSavePolicy = frmMain.SavePolicy.SAVE_SKIP
@@ -69,4 +73,5 @@
         lblExample.Text = ex
         ReformatExample()
     End Sub
+
 End Class

@@ -32,9 +32,10 @@ Partial Class frmSettings
         Me.cmbPart3 = New System.Windows.Forms.ComboBox()
         Me.cmbPart2 = New System.Windows.Forms.ComboBox()
         Me.cmbPart1 = New System.Windows.Forms.ComboBox()
+        Me.chkUnderscore = New System.Windows.Forms.CheckBox()
         Me.lblExample = New System.Windows.Forms.Label()
         Me.Label1 = New System.Windows.Forms.Label()
-        Me.chkUnderscore = New System.Windows.Forms.CheckBox()
+        Me.optSaveRename = New System.Windows.Forms.RadioButton()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         Me.SuspendLayout()
@@ -42,7 +43,7 @@ Partial Class frmSettings
         'btnSave
         '
         Me.btnSave.DialogResult = System.Windows.Forms.DialogResult.OK
-        Me.btnSave.Location = New System.Drawing.Point(53, 266)
+        Me.btnSave.Location = New System.Drawing.Point(51, 299)
         Me.btnSave.Name = "btnSave"
         Me.btnSave.Size = New System.Drawing.Size(128, 36)
         Me.btnSave.TabIndex = 0
@@ -52,7 +53,7 @@ Partial Class frmSettings
         'btnCancel
         '
         Me.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.btnCancel.Location = New System.Drawing.Point(218, 266)
+        Me.btnCancel.Location = New System.Drawing.Point(216, 299)
         Me.btnCancel.Name = "btnCancel"
         Me.btnCancel.Size = New System.Drawing.Size(128, 36)
         Me.btnCancel.TabIndex = 1
@@ -63,33 +64,34 @@ Partial Class frmSettings
         '
         Me.GroupBox1.Controls.Add(Me.optSaveSkip)
         Me.GroupBox1.Controls.Add(Me.optSaveOverwrite)
+        Me.GroupBox1.Controls.Add(Me.optSaveRename)
         Me.GroupBox1.Location = New System.Drawing.Point(12, 179)
         Me.GroupBox1.Name = "GroupBox1"
-        Me.GroupBox1.Size = New System.Drawing.Size(372, 78)
+        Me.GroupBox1.Size = New System.Drawing.Size(372, 109)
         Me.GroupBox1.TabIndex = 4
         Me.GroupBox1.TabStop = False
-        Me.GroupBox1.Text = "File overwrite policy"
+        Me.GroupBox1.Text = "File conflict policy"
         '
         'optSaveSkip
         '
         Me.optSaveSkip.AutoSize = True
-        Me.optSaveSkip.Location = New System.Drawing.Point(22, 48)
+        Me.optSaveSkip.Location = New System.Drawing.Point(22, 73)
         Me.optSaveSkip.Name = "optSaveSkip"
-        Me.optSaveSkip.Size = New System.Drawing.Size(181, 20)
+        Me.optSaveSkip.Size = New System.Drawing.Size(170, 20)
         Me.optSaveSkip.TabIndex = 1
         Me.optSaveSkip.TabStop = True
-        Me.optSaveSkip.Text = "Skip file if already present"
+        Me.optSaveSkip.Text = "Skip file if already exists"
         Me.optSaveSkip.UseVisualStyleBackColor = True
         '
         'optSaveOverwrite
         '
         Me.optSaveOverwrite.AutoSize = True
-        Me.optSaveOverwrite.Location = New System.Drawing.Point(22, 21)
+        Me.optSaveOverwrite.Location = New System.Drawing.Point(22, 47)
         Me.optSaveOverwrite.Name = "optSaveOverwrite"
-        Me.optSaveOverwrite.Size = New System.Drawing.Size(245, 20)
+        Me.optSaveOverwrite.Size = New System.Drawing.Size(199, 20)
         Me.optSaveOverwrite.TabIndex = 0
         Me.optSaveOverwrite.TabStop = True
-        Me.optSaveOverwrite.Text = "Overwrite existing files without asking"
+        Me.optSaveOverwrite.Text = "Overwrite file if already exists"
         Me.optSaveOverwrite.UseVisualStyleBackColor = True
         '
         'GroupBox2
@@ -137,6 +139,16 @@ Partial Class frmSettings
         Me.cmbPart1.Size = New System.Drawing.Size(108, 24)
         Me.cmbPart1.TabIndex = 11
         '
+        'chkUnderscore
+        '
+        Me.chkUnderscore.AutoSize = True
+        Me.chkUnderscore.Location = New System.Drawing.Point(10, 70)
+        Me.chkUnderscore.Name = "chkUnderscore"
+        Me.chkUnderscore.Size = New System.Drawing.Size(241, 20)
+        Me.chkUnderscore.TabIndex = 10
+        Me.chkUnderscore.Text = "Use underscores instead of spaces"
+        Me.chkUnderscore.UseVisualStyleBackColor = True
+        '
         'lblExample
         '
         Me.lblExample.AutoSize = True
@@ -157,21 +169,22 @@ Partial Class frmSettings
         Me.Label1.TabIndex = 6
         Me.Label1.Text = "Example filename:"
         '
-        'chkUnderscore
+        'optSaveRename
         '
-        Me.chkUnderscore.AutoSize = True
-        Me.chkUnderscore.Location = New System.Drawing.Point(10, 70)
-        Me.chkUnderscore.Name = "chkUnderscore"
-        Me.chkUnderscore.Size = New System.Drawing.Size(241, 20)
-        Me.chkUnderscore.TabIndex = 10
-        Me.chkUnderscore.Text = "Use underscores instead of spaces"
-        Me.chkUnderscore.UseVisualStyleBackColor = True
+        Me.optSaveRename.AutoSize = True
+        Me.optSaveRename.Location = New System.Drawing.Point(22, 21)
+        Me.optSaveRename.Name = "optSaveRename"
+        Me.optSaveRename.Size = New System.Drawing.Size(220, 20)
+        Me.optSaveRename.TabIndex = 2
+        Me.optSaveRename.TabStop = True
+        Me.optSaveRename.Text = "Auto-rename file if already exists"
+        Me.optSaveRename.UseVisualStyleBackColor = True
         '
         'frmSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(397, 311)
+        Me.ClientSize = New System.Drawing.Size(397, 347)
         Me.Controls.Add(Me.GroupBox2)
         Me.Controls.Add(Me.GroupBox1)
         Me.Controls.Add(Me.btnCancel)
@@ -201,4 +214,5 @@ Partial Class frmSettings
     Friend WithEvents cmbPart2 As ComboBox
     Friend WithEvents cmbPart1 As ComboBox
     Friend WithEvents chkUnderscore As CheckBox
+    Friend WithEvents optSaveRename As RadioButton
 End Class

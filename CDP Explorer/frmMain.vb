@@ -13,6 +13,7 @@ Public Class frmMain
     Public findString As String
 
     Public Enum SavePolicy
+        SAVE_RENAME
         SAVE_OVERWRITE
         SAVE_SKIP
     End Enum
@@ -92,7 +93,6 @@ Public Class frmMain
         Next part
 
         finalPath = finalPath.Trim()
-        finalPath &= ".cdp"
 
         If My.Settings.fileUseUnderscores Then
             finalPath = basePath & "\" & finalPath.Replace(" ", "_")
@@ -381,11 +381,21 @@ Public Class frmMain
             Array.Copy(BitConverter.GetBytes(bytesCopied.Length - &H10), 0, bytesCopied, &HC, 4)
 
             'write the file to disk
-            If My.Settings.fileSavePolicy = SavePolicy.SAVE_OVERWRITE Then
-                File.WriteAllBytes(exportPath, bytesCopied)
+            If My.Settings.fileSavePolicy = SavePolicy.SAVE_RENAME Then
+                If My.Computer.FileSystem.FileExists(exportPath & ".cdp") Then
+                    Dim index As Integer = 1
+                    Do While My.Computer.FileSystem.FileExists(exportPath & " (" & index & ").cdp")
+                        index += 1
+                    Loop
+                    File.WriteAllBytes(exportPath & " (" & index & ").cdp", bytesCopied)
+                Else
+                    File.WriteAllBytes(exportPath & ".cdp", bytesCopied)
+                End If
+            ElseIf My.Settings.fileSavePolicy = SavePolicy.SAVE_OVERWRITE Then
+                File.WriteAllBytes(exportPath & ".cdp", bytesCopied)
             ElseIf My.Settings.fileSavePolicy = SavePolicy.SAVE_SKIP Then
-                If Not My.Computer.FileSystem.FileExists(exportPath) Then
-                    File.WriteAllBytes(exportPath, bytesCopied)
+                If Not My.Computer.FileSystem.FileExists(exportPath & ".cdp") Then
+                    File.WriteAllBytes(exportPath & ".cdp", bytesCopied)
                 End If
             End If
 
