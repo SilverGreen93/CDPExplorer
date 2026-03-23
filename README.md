@@ -4,21 +4,29 @@ Utility aplication for browsing, searching and extracting Trainz Assets from CDP
 
 ![CDP Explorer v4.0 screenshot](/screenshot.png?raw=true)
 
-## Getting Started
+## Features
 
-You can download a free copy of the code and build it yourself or download the latest Windows binary from the Releases tab.
+- List CDP files contents
+- Search for any asset information in the CDP file
+- Extract individual assets as individual CDPs
+- Open multiple CDP files simultaneously
+- Customizable export filename options
+- Export listing as CSV
+- Copy KUID list
 
 ## Installation
 
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/SilverGreen93/CDPExplorer)](https://github.com/SilverGreen93/CDPExplorer/releases/latest) [![Downloads (Latest Release)](https://img.shields.io/github/downloads/SilverGreen93/CDPExplorer/latest/total?label=latest%20release%20downloads)](https://github.com/SilverGreen93/CDPExplorer/releases/latest) ![GitHub all releases](https://img.shields.io/github/downloads/SilverGreen93/CDPExplorer/total?label=total%20downloads)
 
-There is no installation necessary. The application is ready to run. You can associate the CDP files with this application by choosing "Open With..." in the Windows Explorer context menu and choosing this application as default.
+There is no installation necessary. The application is ready to run as it is. Just download the latest Windows binary from the Releases tab.
+
+To associate the CDP files to always open with this application, use "Open With..." in the Windows Explorer context menu and choosing this application as default.
 
 ## Building
 
 [![Build status](https://ci.appveyor.com/api/projects/status/github/SilverGreen93/CDPExplorer?svg=true)](https://ci.appveyor.com/project/SilverGreen93/CDPExplorer/branch/master)
 
-This project was built with Microsoft Visual Studio 2022 and .NET Framework 4.8.
+This project was built with Microsoft Visual Studio 2026 and .NET Framework 4.8.
 
 ## File Format Specifications
 
@@ -37,4 +45,3 @@ This project is licensed under the MIT License - see [LICENSE.md](LICENSE.md) fi
 ## Acknowledgments
 
 This project was possible by doing reverse engineering on the Chump file format (CDP) and no official information was given in regards to this file format from Auran/N3V.
-
