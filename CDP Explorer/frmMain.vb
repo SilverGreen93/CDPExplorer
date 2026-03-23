@@ -84,7 +84,11 @@ Public Class frmMain
         For Each part In lp
             Select Case part
                 Case "KUID"
-                    finalPath &= RemoveIllegalFileNameChars(grdRow.Cells(0).Value.ToString) & " "
+                    If My.Settings.fileUseKuid2 AndAlso grdRow.Cells(0).Value.ToString.StartsWith("<kuid:") Then
+                        finalPath &= RemoveIllegalFileNameChars(grdRow.Cells(0).Value.ToString.Replace("<kuid:", "kuid2 ").Replace(">", " 0 ")) & " "
+                    Else
+                        finalPath &= RemoveIllegalFileNameChars(grdRow.Cells(0).Value.ToString) & " "
+                    End If
                 Case "build"
                     finalPath &= RemoveIllegalFileNameChars(grdRow.Cells(4).Value.ToString) & " "
                 Case "username"

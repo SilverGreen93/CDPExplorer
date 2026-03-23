@@ -4,52 +4,15 @@
         ReformatExample()
     End Sub
 
-    Sub ReformatExample()
-        If chkUnderscore.Checked Then
-            lblExample.Text = lblExample.Text.Replace(" ", "_")
-        Else
-            lblExample.Text = lblExample.Text.Replace("_", " ")
-        End If
-    End Sub
-
-    Private Sub frmSettings_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        cmbPart1.SelectedItem = My.Settings.fileNamePart1
-        cmbPart2.SelectedItem = My.Settings.fileNamePart2
-        cmbPart3.SelectedItem = My.Settings.fileNamePart3
-
-        chkUnderscore.Checked = My.Settings.fileUseUnderscores
-
-        Select Case My.Settings.fileSavePolicy
-            Case frmMain.SavePolicy.SAVE_RENAME
-                optSaveRename.Checked = True
-            Case frmMain.SavePolicy.SAVE_OVERWRITE
-                optSaveOverwrite.Checked = True
-            Case frmMain.SavePolicy.SAVE_SKIP
-                optSaveSkip.Checked = True
-        End Select
-    End Sub
-
-    Private Sub btnCancel_Click(sender As Object, e As EventArgs) Handles btnCancel.Click
-        Close()
-    End Sub
-
-    Private Sub btnSave_Click(sender As Object, e As EventArgs) Handles btnSave.Click
-        My.Settings.fileNamePart1 = cmbPart1.SelectedItem
-        My.Settings.fileNamePart2 = cmbPart2.SelectedItem
-        My.Settings.fileNamePart3 = cmbPart3.SelectedItem
-
-        My.Settings.fileUseUnderscores = chkUnderscore.Checked
-
-        If optSaveRename.Checked Then
-            My.Settings.fileSavePolicy = frmMain.SavePolicy.SAVE_RENAME
-        ElseIf optSaveOverwrite.Checked Then
-            My.Settings.fileSavePolicy = frmMain.SavePolicy.SAVE_OVERWRITE
-        ElseIf optSaveSkip.Checked Then
-            My.Settings.fileSavePolicy = frmMain.SavePolicy.SAVE_SKIP
-        End If
+    Private Sub chkKuid2_CheckedChanged(sender As Object, e As EventArgs) Handles chkKuid2.CheckedChanged
+        ReformatExample()
     End Sub
 
     Private Sub cmbSelectedIndexChanged(sender As Object, e As EventArgs) Handles cmbPart1.SelectedIndexChanged, cmbPart2.SelectedIndexChanged, cmbPart3.SelectedIndexChanged
+        ReformatExample()
+    End Sub
+
+    Sub ReformatExample()
         Dim ex As String = ""
         Dim lc As New List(Of ComboBox)({cmbPart1, cmbPart2, cmbPart3})
 
@@ -71,7 +34,52 @@
         ex = ex.Trim()
         ex &= ".cdp"
         lblExample.Text = ex
-        ReformatExample()
+
+        If chkKuid2.Checked Then
+            lblExample.Text = lblExample.Text.Replace("kuid 1234 5678", "kuid2 1234 5678 0")
+        End If
+
+        If chkUnderscore.Checked Then
+            lblExample.Text = lblExample.Text.Replace(" ", "_")
+        End If
     End Sub
 
+    Private Sub frmSettings_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        cmbPart1.SelectedItem = My.Settings.fileNamePart1
+        cmbPart2.SelectedItem = My.Settings.fileNamePart2
+        cmbPart3.SelectedItem = My.Settings.fileNamePart3
+
+        chkUnderscore.Checked = My.Settings.fileUseUnderscores
+        chkKuid2.Checked = My.Settings.fileUseKuid2
+
+        Select Case My.Settings.fileSavePolicy
+            Case frmMain.SavePolicy.SAVE_RENAME
+                optSaveRename.Checked = True
+            Case frmMain.SavePolicy.SAVE_OVERWRITE
+                optSaveOverwrite.Checked = True
+            Case frmMain.SavePolicy.SAVE_SKIP
+                optSaveSkip.Checked = True
+        End Select
+    End Sub
+
+    Private Sub btnCancel_Click(sender As Object, e As EventArgs) Handles btnCancel.Click
+        Close()
+    End Sub
+
+    Private Sub btnSave_Click(sender As Object, e As EventArgs) Handles btnSave.Click
+        My.Settings.fileNamePart1 = cmbPart1.SelectedItem
+        My.Settings.fileNamePart2 = cmbPart2.SelectedItem
+        My.Settings.fileNamePart3 = cmbPart3.SelectedItem
+
+        My.Settings.fileUseUnderscores = chkUnderscore.Checked
+        My.Settings.fileUseKuid2 = chkKuid2.Checked
+
+        If optSaveRename.Checked Then
+            My.Settings.fileSavePolicy = frmMain.SavePolicy.SAVE_RENAME
+        ElseIf optSaveOverwrite.Checked Then
+            My.Settings.fileSavePolicy = frmMain.SavePolicy.SAVE_OVERWRITE
+        ElseIf optSaveSkip.Checked Then
+            My.Settings.fileSavePolicy = frmMain.SavePolicy.SAVE_SKIP
+        End If
+    End Sub
 End Class
